@@ -1,0 +1,34 @@
+{
+  "name": "express-github",
+  "version": "0.3.0",
+  "description": "Express middleware for GitHub API",
+  "engines": {
+    "node": "^6.5.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechQuery/Express-GitHub.git"
+  },
+  "keywords": [
+    "Express",
+    "Middleware",
+    "GitHub",
+    "API"
+  ],
+  "author": "shiy007@qq.com",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/TechQuery/Express-GitHub/issues"
+  },
+  "homepage": "https://github.com/TechQuery/Express-GitHub#readme",
+  "dependencies": {
+    "express": "^4.16.1",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "diff2html": "^2.3.1"
+  }
+}
