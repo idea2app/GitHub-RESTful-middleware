@@ -1,6 +1,7 @@
 'use strict';
 
-const Request = require('request-promise-native'),
+const URL_Utility = require('url'),
+      Request = require('request-promise-native'),
       Diff2HTML = require('diff2html').Diff2Html;
 
 const router = require('express').Router(),
@@ -17,11 +18,29 @@ router.get('/oAuth',  function (request, response) {
             config.AppID
         }&scope=${
             config.scope.join(' ')
+        }&state=${
+            Buffer.from( request.headers.referer ).toString('base64')
         }`
     );
 });
 
 router.get('/oAuth/callback',  function (request, response) {
+
+//  Local Debug
+
+    var referer = URL_Utility.parse(
+            Buffer.from(request.query.state, 'base64')  +  ''
+        );
+
+    if (
+        (referer.hostname === 'localhost')  &&
+        (request.hostname !== 'localhost')
+    )
+        return response.redirect(
+            `${referer.protocol}//${referer.host + request.originalUrl}`
+        );
+
+//  Access Token  &  User Profile
 
     Request.post('https://github.com/login/oauth/access_token', {
         body:    {
@@ -81,6 +100,11 @@ router.all('*',  function (request, response) {
         config.getSession(request, response)
     ).then(function (session) {
 
+        var header = {'User-Agent': request.get('User-Agent')};
+
+        if ( session.AccessToken )
+            header.Authorization = `token ${session.AccessToken}`;
+
         Request({
             method:    request.method,
             url:       `${
@@ -88,12 +112,18 @@ router.all('*',  function (request, response) {
             }${
                 request.originalUrl.replace(request.baseUrl, '')
             }`,
-            headers:    {
-                'User-Agent':     request.get('User-Agent'),
-                Authorization:    `token ${session.AccessToken}`
-            },
+            headers:    header,
             json:       is_JSON
-        }).pipe( response );
+        },  function (error, _response_, data) {
+
+            header = { };
+
+            for (var key in _response_.headers)
+                if (key.slice(0, 2)  !==  'x-')
+                    header[ key ] = _response_.headers[ key ];
+
+            response.set( header );    response.json( data );
+        });
     });
 });
 
