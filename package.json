@@ -1,6 +1,6 @@
 {
   "name": "express-github",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Express middleware for GitHub API",
   "engines": {
     "node": "^6.5.0"

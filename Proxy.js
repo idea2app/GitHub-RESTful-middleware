@@ -33,7 +33,10 @@ module.exports = function (API_Root, config) {
             config.getSession(request, response)
         ).then(function (session) {
 
-            var header = {'User-Agent': request.get('User-Agent')};
+            var header = {
+                    Accept:          request.get('Accept'),
+                    'User-Agent':    request.get('User-Agent')
+                };
 
             if ( session.AccessToken )
                 header.Authorization = `token ${session.AccessToken}`;
@@ -55,7 +58,9 @@ module.exports = function (API_Root, config) {
                     if (key.slice(0, 2)  !==  'x-')
                         header[ key ] = _response_.headers[ key ];
 
-                response.set( header );    response.json( data );
+                response.set( header );
+
+                response[is_JSON ? 'json' : 'send']( data );
             });
         });
     });
