@@ -1,12 +1,30 @@
 'use strict';
 
 const Request = require('request-promise-native'),
-      Diff2HTML = require('diff2html').Diff2Html;
+      Diff2HTML = require('diff2html').Diff2Html,
+      CORS_Header = {
+          'access-control-allow-methods':     true,
+          'access-control-allow-headers':     true,
+          'access-control-expose-headers':    true
+      };
 
 
 module.exports = function (API_Root, config) {
 
-    //  Diff file
+    /**
+     * @api  {get}  /repos/:owner/:repo/pull/:id.diff  Get Diff File
+     *
+     * @apiName     getDiffFile
+     * @apiVersion  0.4.0
+     * @apiGroup    Repository
+     *
+     * @apiParam  {String}  owner  ID of a User or Organization
+     * @apiParam  {String}  repo   Name of a Repository
+     * @apiParam  {Number}  id     ID of a Pull Request
+     *
+     * @apiSuccessExample  {html}  HTML converted from Diff by Diff2HTML
+     *     <div class="d2h-wrapper"></div>
+     */
 
     this.get(/repos\/(\S+\/pull\/\S+\.diff)/,  function (request, response) {
 
@@ -36,10 +54,13 @@ module.exports = function (API_Root, config) {
             var header = {
                     Accept:          request.get('Accept'),
                     'User-Agent':    request.get('User-Agent')
-                };
+                },
+                value;
 
             if ( session.AccessToken )
                 header.Authorization = `token ${session.AccessToken}`;
+
+            if (value = request.get('Cookie'))  header.Cookie = value;
 
             Request({
                 method:    request.method,
@@ -54,9 +75,18 @@ module.exports = function (API_Root, config) {
 
                 header = { };
 
-                for (var key in _response_.headers)
-                    if (key.slice(0, 2)  !==  'x-')
-                        header[ key ] = _response_.headers[ key ];
+                for (let key in _response_.headers)
+                    switch ( key.split('-')[0] ) {
+                        case 'access':
+                            if (key in CORS_Header)
+                                header[ key ] = [
+                                    (response.get( key ) || ''),
+                                    _response_.headers[ key ]
+                                ] + '';
+                        case 'x':         break;
+                        default:
+                            header[ key ] = _response_.headers[ key ];
+                    }
 
                 response.set( header );
 

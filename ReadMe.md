@@ -21,4 +21,6 @@
 
 ## Usage
 
-[Example](https://github.com/FreeCodeCamp-Chengdu/GDN/blob/master/server/app.js#L43)
+ - [API Document](https://techquery.github.io/Express-GitHub/)
+
+ - [Example](https://github.com/FreeCodeCamp-Chengdu/GDN/blob/master/server/GitHub.js)

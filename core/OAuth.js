@@ -6,7 +6,17 @@ const URL_Utility = require('url'),  Request = require('request-promise-native')
 
 module.exports = function (API_Root, config) {
 
-    this.get('/oAuth',  function (request, response) {
+    /**
+     * @api  {get}  /OAuth  Redirect to OAuth Page of GitHub
+     *
+     * @apiName     OAuth_entry
+     * @apiVersion  0.4.0
+     * @apiGroup    OAuth
+     *
+     * @apiHeader  {String}  Referer  URL of Source Page
+     */
+
+    this.get('/OAuth',  function (request, response) {
 
         response.redirect(
             `https://github.com/login/oauth/authorize?client_id=${
@@ -19,8 +29,18 @@ module.exports = function (API_Root, config) {
         );
     });
 
+    /**
+     * @api  {get}  /OAuth/callback  OAuth Callback for GitHub
+     *
+     * @apiName     OAuth_callback
+     * @apiVersion  0.4.0
+     * @apiGroup    OAuth
+     *
+     * @apiParam  {String}  code   Disposable checksum
+     * @apiParam  {String}  state  Last Page Referer of this site in Base64
+     */
 
-    this.get('/oAuth/callback',  function (request, response) {
+    this.get('/OAuth/callback',  function (request, response) {
 
     //  Local Debug
 
@@ -64,7 +84,9 @@ module.exports = function (API_Root, config) {
 
         }).then(function () {
 
-            response.redirect( config.successURL );
+            response.redirect(
+                URL_Utility.resolve(referer.href, config.successURL)
+            );
         });
     });
 };

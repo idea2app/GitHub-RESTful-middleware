@@ -1,12 +1,13 @@
 {
   "name": "express-github",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Express middleware for GitHub API",
   "engines": {
     "node": "^6.5.0"
   },
-  "main": "index.js",
+  "main": "core/index.js",
   "scripts": {
+    "build": "apidoc -i core/ -o docs/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,11 +25,14 @@
   "bugs": {
     "url": "https://github.com/TechQuery/Express-GitHub/issues"
   },
-  "homepage": "https://github.com/TechQuery/Express-GitHub#readme",
+  "homepage": "https://techquery.github.io/Express-GitHub/",
   "dependencies": {
-    "express": "^4.16.1",
+    "express": "^4.16.2",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
-    "diff2html": "^2.3.1"
+    "diff2html": "^2.3.2"
+  },
+  "devDependencies": {
+    "apidoc": "^0.17.6"
   }
 }
