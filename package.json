@@ -7,7 +7,7 @@
   },
   "main": "core/index.js",
   "scripts": {
-    "build": "apidoc -i core/ -o docs/",
+    "build": "apidoc -i core/ -o docs/ -t node_modules/apidoc-ewa/source/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -33,6 +33,7 @@
     "diff2html": "^2.3.2"
   },
   "devDependencies": {
-    "apidoc": "^0.17.6"
+    "apidoc": "^0.17.6",
+    "apidoc-ewa": "^1.0.1"
   }
 }
