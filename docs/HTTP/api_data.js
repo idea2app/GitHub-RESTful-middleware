@@ -1,5 +1,69 @@
 define({ "api": [
   {
+    "type": "post",
+    "url": "/hookHub",
+    "title": "Receive all kinds of Event from a Web Hook",
+    "name": "postEvent",
+    "version": "0.5.0",
+    "group": "Hook",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "X-GitHub-Event",
+            "description": "<p>Event name</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "X-GitHub-Delivery",
+            "description": "<p>Unique ID for this delivery</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "X-Hub-Signature",
+            "description": "<p>HMAC hex digest of the payload</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "action",
+            "description": "<p>Event name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
+            "field": "repository",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
+            "field": "organization",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "core/Hook.js",
+    "groupTitle": "Hook"
+  },
+  {
     "type": "get",
     "url": "/OAuth/callback",
     "title": "OAuth Callback for GitHub",

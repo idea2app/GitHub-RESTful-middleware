@@ -1,0 +1,17 @@
+{
+    "source":       {
+        "include":    ["./core/"]
+    },
+    "opts":         {
+        "readme":         "ReadMe.md",
+        "template":       "node_modules/docdash",
+        "destination":    "docs/",
+        "verbose":        true
+    },
+    "templates":    {
+        "default":    {
+            "includeDate":    false
+        }
+    },
+    "plugins":      ["plugins/markdown"]
+}

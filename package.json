@@ -1,6 +1,6 @@
 {
   "name": "express-github",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Express middleware for GitHub API",
   "engines": {
     "node": "^6.5.0"
@@ -12,7 +12,9 @@
     }
   },
   "scripts": {
-    "build": "apidoc -i core/ -o docs/ -t node_modules/apidoc-ewa/source/",
+    "APIDoc": "apidoc -i core/ -o docs/HTTP/ -t node_modules/apidoc-ewa/source/",
+    "JSDoc": "jsdoc -c ./build/JSDoc.json  &&  reduce-blank ./docs/",
+    "build": "npm run APIDoc  &&  npm run JSDoc",
     "help": "opn docs/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -41,6 +43,9 @@
   "devDependencies": {
     "apidoc": "^0.17.6",
     "apidoc-ewa": "^1.0.1",
-    "opn-cli": "^3.1.0"
+    "docdash": "^0.4.0",
+    "jsdoc": "^3.5.5",
+    "opn-cli": "^3.1.0",
+    "reduce-blank": "^0.2.0"
   }
 }

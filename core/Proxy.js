@@ -88,6 +88,8 @@ module.exports = function (config) {
                             header[ key ] = _response_.headers[ key ];
                     }
 
+                response.status( _response_.statusCode );
+
                 response.set( header );
 
                 response[is_JSON ? 'json' : 'send']( data );

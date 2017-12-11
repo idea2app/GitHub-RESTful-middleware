@@ -23,10 +23,14 @@
 
  4. **Diff to HTML** (Get `/repos/:owner/:repo/pull/:pull_num.diff` with `Accept: text/html`, the Diff Code will be converted to HTML by [diff2html](https://diff2html.xyz/))
 
+ 5. One **Hook URL** to receive all kinds of Event
+
 
 
 ## Usage
 
- - [API Document](https://techquery.github.io/Express-GitHub/)
+ - [JS Document](https://techquery.github.io/Express-GitHub/)
+
+ - [API Document](https://techquery.github.io/Express-GitHub/HTTP/)
 
  - [Example](https://github.com/FreeCodeCamp-Chengdu/GDN/blob/master/server/GitHub.js)

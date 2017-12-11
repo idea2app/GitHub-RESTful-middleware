@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Global - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="external-EventEmitter.html">EventEmitter</a></li></ul><h3>Events</h3><ul><li><a href="external-EventEmitter.html#event:error">error</a></li></ul><h3>Namespaces</h3><ul><li><a href="Express.html">Express</a><ul class='methods'><li data-type='method'><a href="Express.html#.Router">Router</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#exports">exports</a></li></ul>
+</nav>
+
+<div id="main">
+
+    <h1 class="page-title">Global</h1>
+
+<section>
+
+<header>
+
+        <h2>
+
+        </h2>
+
+</header>
+
+<article>
+    <div class="container-overview">
+
+<dl class="details">
+
+</dl>
+
+    </div>
+
+        <h3 class="subsection-title">Methods</h3>
+
+    <h4 class="name" id="exports"><span class="type-signature"></span>exports<span class="signature">(API_Config, Local_Config)</span><span class="type-signature"> &rarr; {<a href="global.html#Middleware">Middleware</a>}</span></h4>
+
+<dl class="details">
+
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line103">line 103</a>
+    </li></ul></dd>
+
+</dl>
+
+    <h5>Parameters:</h5>
+
+<table class="params">
+    <thead>
+    <tr>
+
+        <th>Name</th>
+
+        <th>Type</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+
+                <td class="name"><code>API_Config</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="global.html#APIConfig">APIConfig</a></span>
+
+            </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>Local_Config</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="global.html#LocalConfig">LocalConfig</a></span>
+
+            </td>
+
+            <td class="description last"></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<h5>Returns:</h5>
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+
+<span class="param-type"><a href="global.html#Middleware">Middleware</a></span>
+
+    </dd>
+</dl>
+
+        <h3 class="subsection-title">Type Definitions</h3>
+
+<h4 class="name" id="APIConfig">APIConfig</h4>
+
+<dl class="details">
+
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line45">line 45</a>
+    </li></ul></dd>
+
+</dl>
+
+    <h5 class="subsection-title">Properties:</h5>
+
+<table class="props">
+    <thead>
+    <tr>
+
+        <th>Name</th>
+
+        <th>Type</th>
+
+        <th>Attributes</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+
+                <td class="name"><code>AppID</code></td>
+
+            <td class="type">
+
+<span class="param-type">string</span>
+
+            </td>
+
+                <td class="attributes">
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>AppSecret</code></td>
+
+            <td class="type">
+
+<span class="param-type">string</span>
+
+            </td>
+
+                <td class="attributes">
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>AppScope</code></td>
+
+            <td class="type">
+
+<span class="param-type">Array.&lt;string></span>
+
+            </td>
+
+                <td class="attributes">
+
+                    &lt;optional><br>
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>HookSecret</code></td>
+
+            <td class="type">
+
+<span class="param-type">string</span>
+
+            </td>
+
+                <td class="attributes">
+
+                    &lt;optional><br>
+
+                </td>
+
+            <td class="description last"><p>Secret code of a <strong>Web hook</strong></p></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<div class="description">
+    <p>API configuration</p>
+</div>
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+
+<span class="param-type">object</span>
+
+        </li>
+    </ul>
+
+<h4 class="name" id="LocalConfig">LocalConfig</h4>
+
+<dl class="details">
+
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line76">line 76</a>
+    </li></ul></dd>
+
+</dl>
+
+    <h5 class="subsection-title">Properties:</h5>
+
+<table class="props">
+    <thead>
+    <tr>
+
+        <th>Name</th>
+
+        <th>Type</th>
+
+        <th>Attributes</th>
+
+        <th>Default</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+
+                <td class="name"><code>setSession</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="global.html#SessionHandler">SessionHandler</a></span>
+
+            </td>
+
+                <td class="attributes">
+
+                </td>
+
+                <td class="default">
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>getSession</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="global.html#SessionHandler">SessionHandler</a></span>
+
+            </td>
+
+                <td class="attributes">
+
+                </td>
+
+                <td class="default">
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>successURL</code></td>
+
+            <td class="type">
+
+<span class="param-type">string</span>
+
+            </td>
+
+                <td class="attributes">
+
+                    &lt;optional><br>
+
+                </td>
+
+                <td class="default">
+
+                    <code>""</code>
+
+                </td>
+
+            <td class="description last"><p>URL to redirect when OAuth succeed</p></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<div class="description">
+    <p>Local configuration</p>
+</div>
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+
+<span class="param-type">object</span>
+
+        </li>
+    </ul>
+
+<h4 class="name" id="Middleware">Middleware</h4>
+
+<dl class="details">
+
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line86">line 86</a>
+    </li></ul></dd>
+
+</dl>
+
+    <h5 class="subsection-title">Properties:</h5>
+
+<table class="props">
+    <thead>
+    <tr>
+
+        <th>Name</th>
+
+        <th>Type</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+
+                <td class="name"><code>router</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="Express.html#.Router">Express.Router</a></span>
+
+            </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>emitter</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="external-EventEmitter.html">external:EventEmitter</a></span>
+
+            </td>
+
+            <td class="description last"></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<div class="description">
+    <p>Middleware instance</p>
+</div>
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+
+<span class="param-type">object</span>
+
+        </li>
+    </ul>
+
+<h4 class="name" id="SessionData">SessionData</h4>
+
+<dl class="details">
+
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line56">line 56</a>
+    </li></ul></dd>
+
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://developer.github.com/v3/users/#get-the-authenticated-user">More data about the Login User</a></li>
+        </ul>
+    </dd>
+
+</dl>
+
+    <h5 class="subsection-title">Properties:</h5>
+
+<table class="props">
+    <thead>
+    <tr>
+
+        <th>Name</th>
+
+        <th>Type</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+
+                <td class="name"><code>AccessToken</code></td>
+
+            <td class="type">
+
+<span class="param-type">string</span>
+
+            </td>
+
+            <td class="description last"><p>Access token of <strong>OAuth 2.0</strong></p></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<div class="description">
+    <p>Session data</p>
+</div>
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+
+<span class="param-type">object</span>
+
+        </li>
+    </ul>
+
+    <h4 class="name" id="SessionHandler"><span class="type-signature"></span>SessionHandler<span class="signature">(request, response, data<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+<dl class="details">
+
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line66">line 66</a>
+    </li></ul></dd>
+
+</dl>
+
+<div class="description">
+    <p>Session handler</p>
+</div>
+
+    <h5>Parameters:</h5>
+
+<table class="params">
+    <thead>
+    <tr>
+
+        <th>Name</th>
+
+        <th>Type</th>
+
+        <th>Attributes</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+
+                <td class="name"><code>request</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="Express.html#~Request">Express~Request</a></span>
+
+            </td>
+
+                <td class="attributes">
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>response</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="Express.html#~Response">Express~Response</a></span>
+
+            </td>
+
+                <td class="attributes">
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+        <tr>
+
+                <td class="name"><code>data</code></td>
+
+            <td class="type">
+
+<span class="param-type"><a href="global.html#SessionData">SessionData</a></span>
+
+            </td>
+
+                <td class="attributes">
+
+                    &lt;optional><br>
+
+                </td>
+
+            <td class="description last"></td>
+        </tr>
+
+    </tbody>
+</table>
+
+</article>
+
+</section>
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -22,7 +22,7 @@ module.exports = function (config) {
             `https://github.com/login/oauth/authorize?client_id=${
                 config.AppID
             }&scope=${
-                config.scope.join(' ')
+                (config.AppScope || [ ]).join(' ')
             }&state=${
                 Buffer.from( request.headers.referer ).toString('base64')
             }`
@@ -86,7 +86,7 @@ module.exports = function (config) {
         }).then(function () {
 
             response.redirect(
-                URL_Utility.resolve(referer.href, config.successURL)
+                URL_Utility.resolve(referer.href,  config.successURL || '')
             );
         });
     });
