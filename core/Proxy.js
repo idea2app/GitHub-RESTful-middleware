@@ -9,7 +9,7 @@ const Request = require('request-promise-native'),
       };
 
 
-module.exports = function (API_Root, config) {
+module.exports = function (config) {
 
     /**
      * @api  {get}  /repos/:owner/:repo/pull/:id.diff  Get Diff File
@@ -53,7 +53,7 @@ module.exports = function (API_Root, config) {
 
             var header = {
                     Accept:          request.get('Accept'),
-                    'User-Agent':    request.get('User-Agent')
+                    'User-Agent':    config.userAgent
                 },
                 value;
 
@@ -65,7 +65,7 @@ module.exports = function (API_Root, config) {
             Request({
                 method:    request.method,
                 url:       `${
-                    API_Root
+                    config.apiRoot
                 }${
                     request.originalUrl.replace(request.baseUrl, '')
                 }`,

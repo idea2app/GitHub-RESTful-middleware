@@ -19,7 +19,9 @@
 
  2. **API Proxy** (HTTP-only **Cookie Session** instead of Access Token is easy to use for Web front-end)
 
- 3. **Diff to HTML** (Get `/repos/:owner/:repo/pull/:pull_num.diff` with `Accept: text/html`, the Diff Code will be converted to HTML by [diff2html](https://diff2html.xyz/))
+ 3. Wrapper APIs to get the **Technique(Language) list** of a User or Organization
+
+ 4. **Diff to HTML** (Get `/repos/:owner/:repo/pull/:pull_num.diff` with `Accept: text/html`, the Diff Code will be converted to HTML by [diff2html](https://diff2html.xyz/))
 
 
 

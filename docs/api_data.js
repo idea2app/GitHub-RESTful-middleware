@@ -54,6 +54,38 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/orgs/:name/languages",
+    "title": "Get Technique(Language)s of an Organization",
+    "name": "getOrganizationLanguage",
+    "version": "0.4.1",
+    "group": "Organization",
+    "filename": "core/Language.js",
+    "groupTitle": "Organization",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of a User or Organization</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Technique(Language) array",
+          "content": "[\n    {\"name\": \"JavaScript\",  \"count\": 123456},\n    {\"name\": \"HTML\",  \"count\": 12345},\n    {\"name\": \"CSS\",  \"count\": 1234}\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/repos/:owner/:repo/pull/:id.diff",
     "title": "Get Diff File",
     "name": "getDiffFile",
@@ -97,5 +129,47 @@ define({ "api": [
     },
     "filename": "core/Proxy.js",
     "groupTitle": "Repository"
+  },
+  {
+    "type": "get",
+    "url": "/user/languages",
+    "title": "Get Technique(Language)s of an OAuth User",
+    "name": "getOAuthUserLanguage",
+    "version": "0.4.1",
+    "group": "User",
+    "filename": "core/Language.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "get",
+    "url": "/users/:name/languages",
+    "title": "Get Technique(Language)s of a User",
+    "name": "getUserLanguage",
+    "version": "0.4.1",
+    "group": "User",
+    "filename": "core/Language.js",
+    "groupTitle": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of a User or Organization</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Technique(Language) array",
+          "content": "[\n    {\"name\": \"JavaScript\",  \"count\": 123456},\n    {\"name\": \"HTML\",  \"count\": 12345},\n    {\"name\": \"CSS\",  \"count\": 1234}\n]",
+          "type": "json"
+        }
+      ]
+    }
   }
 ] });

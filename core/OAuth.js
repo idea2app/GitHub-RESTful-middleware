@@ -4,7 +4,7 @@ const URL_Utility = require('url'),  Request = require('request-promise-native')
 
 
 
-module.exports = function (API_Root, config) {
+module.exports = function (config) {
 
     /**
      * @api  {get}  /OAuth  Redirect to OAuth Page of GitHub
@@ -46,7 +46,8 @@ module.exports = function (API_Root, config) {
 
         var referer = URL_Utility.parse(
                 Buffer.from(request.query.state, 'base64')  +  ''
-            );
+            ),
+            AccessToken;
 
         if (
             (referer.hostname === 'localhost')  &&
@@ -67,18 +68,18 @@ module.exports = function (API_Root, config) {
             json:    true
         }).then(function (data) {
 
-            config.AccessToken = data.access_token;
+            AccessToken = data.access_token;
 
-            return  Request(`${API_Root}/user`, {
+            return  Request(`${config.apiRoot}/user`, {
                 headers:    {
-                    'User-Agent':     'Express Middleware - GitHub API',
-                    Authorization:    `token ${config.AccessToken}`
+                    'User-Agent':     config.userAgent,
+                    Authorization:    `token ${AccessToken}`
                 },
                 json:       true
             });
         }).then(function (data) {
 
-            data.AccessToken = config.AccessToken;
+            data.AccessToken = AccessToken;
 
             return  config.setSession(request, response, data);
 
