@@ -25,6 +25,8 @@
 
  5. One **Hook URL** to receive all kinds of Event
 
+ 6. 3 APIs of [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) about Organization & Repository
+
 
 
 ## Usage

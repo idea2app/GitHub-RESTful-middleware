@@ -1,11 +1,136 @@
 define({ "api": [
   {
+    "type": "get",
+    "url": "/repos/:owner/:repo/issues/events",
+    "title": "Repository issue SSE",
+    "name": "getIssueEvent",
+    "version": "0.5.1",
+    "group": "Event",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Accept",
+            "defaultValue": "text/event-stream",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "owner",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "repo",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "core/Hook.js",
+    "groupTitle": "Event"
+  },
+  {
+    "type": "get",
+    "url": "/orgs/:org/events",
+    "title": "Organization SSE",
+    "name": "getOrgEvent",
+    "version": "0.5.1",
+    "group": "Event",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Accept",
+            "defaultValue": "text/event-stream",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "org",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "core/Hook.js",
+    "groupTitle": "Event"
+  },
+  {
+    "type": "get",
+    "url": "/repos/:owner/:repo/events",
+    "title": "Repository SSE",
+    "name": "getRepoEvent",
+    "version": "0.5.1",
+    "group": "Event",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Accept",
+            "defaultValue": "text/event-stream",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "owner",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "repo",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "core/Hook.js",
+    "groupTitle": "Event"
+  },
+  {
     "type": "post",
     "url": "/hookHub",
     "title": "Receive all kinds of Event from a Web Hook",
     "name": "postEvent",
     "version": "0.5.0",
-    "group": "Hook",
+    "group": "Event",
     "header": {
       "fields": {
         "Header": [
@@ -61,7 +186,7 @@ define({ "api": [
       }
     },
     "filename": "core/Hook.js",
-    "groupTitle": "Hook"
+    "groupTitle": "Event"
   },
   {
     "type": "get",
