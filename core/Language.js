@@ -1,54 +1,33 @@
-'use strict';
-
-const Request = require('request-promise-native');
-
+import { githubAPIClient } from './OAuth';
 
 function Tech_Counter(list) {
-
-    var tech = { };
+    var tech = {};
 
     for (let item of list)
         for (let name in item) {
+            tech[name] ||= { name, count: 0 };
 
-            tech[ name ] = tech[ name ]  ||  {
-                name:     name,
-                count:    0
-            };
-
-            tech[ name ].count += item[ name ];
+            tech[name].count += item[name];
         }
-
-    return  Object.keys( tech ).map(function (name) {
-
-        return  tech[ name ];
-
-    }).sort(function (A, B) {
-
-        return  B.count - A.count;
-    });
+    return Object.values(tech).sort((A, B) => B.count - A.count);
 }
 
+async function Repository_Filter(request_option, OAuth) {
+    const { body: repos } = await githubAPIClient.get(request_option);
 
-function Repository_Filter(request_option, response, OAuth) {
+    const languages = await Promise.all(
+        repos
+            .filter(
+                ({ fork, permissions }) => !fork && (!OAuth || permissions.push)
+            )
+            .map(({ languages_url }) => {
+                request_option.url = languages_url;
 
-    return  Request( request_option ).then(function (repos) {
-
-        return  Promise.all(repos.filter(function (repo) {
-
-            return  (! repo.fork)  &&  ((! OAuth) || repo.permissions.push);
-
-        }).map(function (repo) {
-
-            request_option.url = repo.languages_url;
-
-            return  Request( request_option );
-        }));
-    }).then(function (languages) {
-
-        response.json( Tech_Counter( languages ) );
-    });
+                return githubAPIClient.get(request_option);
+            })
+    );
+    return Tech_Counter(languages);
 }
-
 
 /**
  * @apiDefine Language
@@ -62,12 +41,11 @@ function Repository_Filter(request_option, response, OAuth) {
  *         {"name": "CSS",  "count": 1234}
  *     ]
  */
-module.exports = function (config) {
-
+export default function (config) {
     var option = {
-            headers:    {'User-Agent':  config.userAgent},
-            json:       true
-        };
+        headers: { 'User-Agent': config.userAgent },
+        json: true
+    };
 
     /**
      * @api  {get}  /users/:name/languages  Get Technique(Language)s of a User
@@ -78,14 +56,12 @@ module.exports = function (config) {
      *
      * @apiUse Language
      */
-    this.get('/users/:name/languages',  function (request, response) {
-
-        var _option_ = Object.assign({ }, option);
-
-        _option_.url =
-            `${config.apiRoot}/users/${request.params.name}/repos?type=all`;
-
-        Repository_Filter(_option_, response);
+    this.get('/users/:name/languages', request => {
+        const _option_ = {
+            ...option,
+            url: `${config.apiRoot}/users/${request.params.name}/repos?type=all`
+        };
+        return Repository_Filter(_option_);
     });
 
     /**
@@ -95,21 +71,16 @@ module.exports = function (config) {
      * @apiVersion  0.4.1
      * @apiGroup    User
      */
-    this.get('/user/languages',  function (request, response) {
+    this.get('/user/languages', async (request, response) => {
+        const session = await config.getSession(request, response);
 
-        Promise.resolve(
-            config.getSession(request, response)
-        ).then(function (session) {
+        var _option_ = { ...option };
 
-            var _option_ = Object.assign({ }, option);
+        _option_.headers.Authorization = `Bearer ${session.AccessToken}`;
 
-            _option_.headers.Authorization = `token ${session.AccessToken}`;
+        _option_.url = `${config.apiRoot}/user/repos?affiliation=owner,collaborator`;
 
-            _option_.url =
-                `${config.apiRoot}/user/repos?affiliation=owner,collaborator`;
-
-            return  Repository_Filter(_option_, response, true);
-        });
+        return Repository_Filter(_option_, true);
     });
 
     /**
@@ -121,12 +92,11 @@ module.exports = function (config) {
      *
      * @apiUse Language
      */
-    this.get('/orgs/:name/languages',  function (request, response) {
-
-        var _option_ = Object.assign({ }, option);
-
-        _option_.url = `${config.apiRoot}/orgs/${request.params.name}/repos`;
-
-        Repository_Filter(_option_, response);
+    this.get('/orgs/:name/languages', request => {
+        const _option_ = {
+            ...option,
+            url: `${config.apiRoot}/orgs/${request.params.name}/repos`
+        };
+        return Repository_Filter(_option_);
     });
-};
+}

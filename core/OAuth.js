@@ -1,11 +1,16 @@
-'use strict';
+import { HTTPClient } from 'koajax';
+import { resolve } from 'url';
 
-const URL_Utility = require('url'),  Request = require('request-promise-native');
+export const githubClient = new HTTPClient({
+        baseURI: 'https://github.com/',
+        responseType: 'json'
+    }),
+    githubAPIClient = new HTTPClient({
+        baseURI: 'https://api.github.com/',
+        responseType: 'json'
+    });
 
-
-
-module.exports = function (config) {
-
+export default function (config) {
     /**
      * @api  {get}  /OAuth  Redirect to OAuth Page of GitHub
      *
@@ -16,17 +21,15 @@ module.exports = function (config) {
      * @apiHeader  {String}  Referer  URL of Source Page
      */
 
-    this.get('/OAuth',  function (request, response) {
-
-        response.redirect(
-            `https://github.com/login/oauth/authorize?client_id=${
-                config.AppID
-            }&scope=${
-                (config.AppScope || [ ]).join(' ')
-            }&state=${
-                Buffer.from( request.headers.referer ).toString('base64')
-            }`
-        );
+    this.get('/OAuth', function (request, response) {
+        const path = `${githubClient.baseURI}login/oauth/authorize?${new URLSearchParams(
+            {
+                client_id: config.AppID,
+                scope: (config.AppScope || []).join(' '),
+                state: Buffer.from(request.headers.referer).toString('base64')
+            }
+        )}`;
+        response.redirect(path);
     });
 
     /**
@@ -40,54 +43,33 @@ module.exports = function (config) {
      * @apiParam  {String}  state  Last Page Referer of this site in Base64
      */
 
-    this.get('/OAuth/callback',  function (request, response) {
+    this.get('/OAuth/callback', async (request, response) => {
+        //  Local Debug
 
-    //  Local Debug
+        const { hostname, protocol, host, href } = new URL(
+            Buffer.from(request.query.state, 'base64') + ''
+        );
 
-        var referer = URL_Utility.parse(
-                Buffer.from(request.query.state, 'base64')  +  ''
-            ),
-            AccessToken;
-
-        if (
-            (referer.hostname === 'localhost')  &&
-            (request.hostname !== 'localhost')
-        )
+        if (hostname === 'localhost' && request.hostname !== 'localhost')
             return response.redirect(
-                `${referer.protocol}//${referer.host + request.originalUrl}`
+                `${protocol}//${host + request.originalUrl}`
             );
+        //  Access Token  &  User Profile
 
-    //  Access Token  &  User Profile
-
-        Request.post('https://github.com/login/oauth/access_token', {
-            body:    {
-                client_id:        config.AppID,
-                client_secret:    config.AppSecret,
-                code:             request.query.code
-            },
-            json:    true
-        }).then(function (data) {
-
-            AccessToken = data.access_token;
-
-            return  Request(`${config.apiRoot}/user`, {
-                headers:    {
-                    'User-Agent':     config.userAgent,
-                    Authorization:    `token ${AccessToken}`
-                },
-                json:       true
-            });
-        }).then(function (data) {
-
-            data.AccessToken = AccessToken;
-
-            return  config.setSession(request, response, data);
-
-        }).then(function () {
-
-            response.redirect(
-                URL_Utility.resolve(referer.href,  config.successURL || '')
-            );
+        const { body } = await githubClient.post('login/oauth/access_token', {
+            client_id: config.AppID,
+            client_secret: config.AppSecret,
+            code: request.query.code
         });
+        const { body: user } = await githubAPIClient.get('user', {
+            'User-Agent': config.userAgent,
+            Authorization: `Bearer ${body.access_token}`
+        });
+
+        // data.AccessToken = AccessToken;
+
+        // return config.setSession(request, response, data);
+
+        response.redirect(resolve(href, config.successURL || ''));
     });
-};
+}

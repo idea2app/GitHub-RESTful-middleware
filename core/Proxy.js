@@ -1,16 +1,13 @@
-'use strict';
+import { html } from 'diff2html';
+import { githubAPIClient, githubClient } from './OAuth';
 
-const Request = require('request-promise-native'),
-      Diff2HTML = require('diff2html').Diff2Html,
-      CORS_Header = {
-          'access-control-allow-methods':     true,
-          'access-control-allow-headers':     true,
-          'access-control-expose-headers':    true
-      };
+const CORS_Header = {
+    'access-control-allow-methods': true,
+    'access-control-allow-headers': true,
+    'access-control-expose-headers': true
+};
 
-
-module.exports = function (config) {
-
+export default function (config) {
     /**
      * @api  {get}  /repos/:owner/:repo/pull/:id.diff  Get Diff File
      *
@@ -26,74 +23,66 @@ module.exports = function (config) {
      *     <div class="d2h-wrapper"></div>
      */
 
-    this.get(/repos\/(\S+\/pull\/\S+\.diff)/,  function (request, response) {
+    this.get(/repos\/(\S+\/pull\/\S+\.diff)/, async (request, response) => {
+        const { body: data } = await githubClient.get(request.params[0]);
 
-        Request(`https://github.com/${request.params[0]}`).then(function (data) {
-
-            response.end(
-                request.accepts('html') ?
-                    Diff2HTML.getPrettyHtml(data, {
-                        outputFormat:    'side-by-side'
-                    }) :
-                    data
-            );
-        });
+        response.end(
+            request.accepts('html')
+                ? html(data, { outputFormat: 'side-by-side' })
+                : data
+        );
     });
-
 
     //  Other API Proxy
 
-    this.all('*',  function (request, response) {
+    this.all('*', async (request, response) => {
+        var is_JSON = !!request.accepts('json');
 
-        var is_JSON = Boolean( request.accepts('json') );
+        const session = await config.getSession(request, response),
+            header = {
+                Accept: request.get('Accept'),
+                'User-Agent': config.userAgent
+            };
+        if (session.AccessToken)
+            header.Authorization = `Bearer ${session.AccessToken}`;
 
-        Promise.resolve(
-            config.getSession(request, response)
-        ).then(function (session) {
+        if ((value = request.get('Cookie'))) header.Cookie = value;
 
-            var header = {
-                    Accept:          request.get('Accept'),
-                    'User-Agent':    config.userAgent
-                },
-                value;
-
-            if ( session.AccessToken )
-                header.Authorization = `token ${session.AccessToken}`;
-
-            if (value = request.get('Cookie'))  header.Cookie = value;
-
-            Request({
-                method:    request.method,
-                url:       `${
-                    config.apiRoot
-                }${
-                    request.originalUrl.replace(request.baseUrl, '')
-                }`,
-                headers:    header,
-                json:       is_JSON
-            },  function (error, _response_, data) {
-
-                header = { };
-
-                for (let key in _response_.headers)
-                    switch ( key.split('-')[0] ) {
-                        case 'access':
-                            if (key in CORS_Header)
-                                header[ key ] = [
-                                    (response.get( key ) || ''),
-                                    _response_.headers[ key ]
-                                ] + '';
-                        case 'x':         break;
-                        default:
-                            header[ key ] = _response_.headers[ key ];
-                    }
-
-                response.status( _response_.statusCode );
-
-                response.set( header );
-
-                response[is_JSON ? 'json' : 'send']( data );
-            });
+        const {
+            status,
+            headers,
+            body: data
+        } = await githubAPIClient.request({
+            method: request.method,
+            path: `${config.apiRoot}${request.originalUrl.replace(
+                request.baseUrl,
+                ''
+            )}`,
+            headers: header,
+            responseType: is_JSON ? 'json' : 'arraybuffer'
         });
+
+        const responseHeader = Object.fromEntries(
+            Object.entries(headers)
+                .map(([key, value]) => {
+                    switch (key.split('-')[0]) {
+                        case 'access':
+                            return Object.entries(CORS_Header).map(() => [
+                                key,
+                                [response.get(key) || '', value] + ''
+                            ]);
+                        case 'x':
+                            return [];
+                        default:
+                            [key, value];
+                    }
+                })
+                .flat()
+        );
+        response.status(status);
+
+        response.set(responseHeader);
+
+        response[is_JSON ? 'json' : 'send'](data);
     });
-};
+}
