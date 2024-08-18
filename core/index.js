@@ -1,4 +1,3 @@
-'use strict';
 /**
  * Express framework
  *
@@ -37,10 +36,10 @@
  * @see {@link https://expressjs.com/en/4x/api.html#router}
  */
 const Router = require('express').Router,
-      config = {
-          userAgent:    'Express Middleware - GitHub API',
-          apiRoot:      'https://api.github.com'
-      };
+    config = {
+        userAgent: 'Express Middleware - GitHub API',
+        apiRoot: 'https://api.github.com'
+    };
 
 /**
  * API configuration
@@ -92,6 +91,11 @@ const Router = require('express').Router,
  * @property {external:EventEmitter} emitter
  */
 
+import OAuth from './OAuth';
+import Language from './Language';
+import Hook from './Hook';
+import Proxy from './Proxy';
+
 /**
  * @global
  *
@@ -100,22 +104,18 @@ const Router = require('express').Router,
  *
  * @return {Middleware}
  */
-module.exports = function (API_Config, Local_Config) {
-
+export default (API_Config, Local_Config) => {
     const router = Router();
 
     Object.assign(config, API_Config, Local_Config);
 
-    require('./OAuth').call(router, config);
+    OAuth.call(router, config);
 
-    require('./Language').call(router, config);
+    Language.call(router, config);
 
-    const emitter = require('./Hook').call(router, config);
+    const emitter = Hook.call(router, config);
 
-    require('./Proxy').call(router, config);
+    Proxy.call(router, config);
 
-    return {
-        router:     router,
-        emitter:    emitter
-    };
+    return { router, emitter };
 };

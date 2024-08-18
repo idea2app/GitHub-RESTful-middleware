@@ -1,58 +1,58 @@
 {
-  "name": "express-github",
-  "version": "0.5.1",
-  "description": "Express middleware for GitHub API",
-  "keywords": [
-    "Express",
-    "Middleware",
-    "GitHub",
-    "API"
-  ],
-  "license": "GPL-3.0",
-  "author": "shiy2008@gmail.com",
-  "homepage": "https://tech-query.me/Express-GitHub/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TechQuery/Express-GitHub.git"
-  },
-  "bugs": {
-    "url": "https://github.com/TechQuery/Express-GitHub/issues"
-  },
-  "main": "core/index.js",
-  "engines": {
-    "node": "^6.3.0"
-  },
-  "dependencies": {
-    "express": "^4.16.4",
-    "express-sse": "^0.5.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
-    "diff2html": "^2.7.0"
-  },
-  "scripts": {
-    "APIDoc": "apidoc -i core/ -o docs/HTTP/ -t node_modules/apidoc-ewa/source/",
-    "JSDoc": "jsdoc -c ./build/JSDoc.json  &&  reduce-blank ./docs/",
-    "build": "npm run APIDoc  &&  npm run JSDoc",
-    "help": "npm run build  &&  web-server docs/ -o",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build  &&  git add ."
+    "name": "github-restful-middleware",
+    "version": "0.6.0",
+    "description": "Express middleware for GitHub API",
+    "keywords": [
+        "Express",
+        "Middleware",
+        "GitHub",
+        "API"
+    ],
+    "license": "LGPL-3.0-or-later",
+    "author": "shiy2008@gmail.com",
+    "homepage": "https://idea2app.github.io/GitHub-RESTful-middleware/",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/idea2app/GitHub-RESTful-middleware.git"
+    },
+    "bugs": {
+        "url": "https://github.com/idea2app/GitHub-RESTful-middleware/issues"
+    },
+    "main": "core/index.js",
+    "engines": {
+        "node": ">=18"
+    },
+    "dependencies": {
+        "diff2html": "^3.4.48",
+        "koajax": "^2.0.0",
+        "reflect-metadata": "^0.2.2",
+        "routing-controllers": "^0.10.4",
+        "tslib": "^2.6.3"
+    },
+    "scripts": {
+        "prepare": "husky",
+        "docs": "typedoc core/",
+        "build": "rm -rf dist/ docs/  &&  tsc  &&  npm run docs",
+        "help": "npm run build  &&  web-server docs/ -o",
+        "test": "lint-staged"
+    },
+    "devDependencies": {
+        "@tsconfig/node18": "^18.2.4",
+        "@types/node": "18",
+        "husky": "^9.1.4",
+        "koapache": "^2.2.2",
+        "lint-staged": "^15.2.9",
+        "prettier": "^3.3.3",
+        "typedoc": "^0.26.5",
+        "typescript": "^5.5.4"
+    },
+    "prettier": {
+        "singleQuote": true,
+        "trailingComma": "none",
+        "arrowParens": "avoid",
+        "tabWidth": 4
+    },
+    "lint-staged": {
+        "*.{md,json,yml,js,ts}": "prettier --write"
     }
-  },
-  "devDependencies": {
-    "apidoc": "^0.17.7",
-    "apidoc-ewa": "^1.0.1",
-    "docdash": "^1.0.3",
-    "husky": "^1.3.1",
-    "jsdoc": "^3.5.5",
-    "koapache": "^1.0.6",
-    "reduce-blank": "^0.2.0"
-  },
-  "apidoc": {
-    "template": {
-      "forceLanguage": "en"
-    }
-  }
 }

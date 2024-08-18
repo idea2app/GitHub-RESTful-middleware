@@ -6,43 +6,33 @@
  *
  * @see {@link https://nodejs.org/dist/latest-v6.x/docs/api/events.html#events_class_eventemitter|Node.JS - Event module}
  */
-const EventEmitter = require('events'),
-      Crypto = require('crypto'),
-      SSE = require('express-sse');
-
+import EventEmitter from 'events';
+import Crypto from 'crypto';
+import SSE from 'express-sse';
 
 function channel(source, filter) {
-
     var target = new SSE();
 
-    return  function (request, response, next) {
-
-        if (! request.accepts('text/event-stream'))  return next();
+    return function (request, response, next) {
+        if (!request.accepts('text/event-stream')) return next();
 
         target.init(request, response);
 
         function send(event) {
+            if (!filter.call(this, event, request)) return;
 
-            if ( filter.call(this, event, request) ) {
+            target.send(event, event.action);
 
-                target.send(event, event.action);
-
-                target.send( event );
-            }
+            target.send(event);
         }
 
         source.on('*', send);
 
-        request.on('close',  function () {
-
-            source.removeListener('*', send);
-        });
+        request.on('close', () => source.removeListener('*', send));
     };
 }
 
-
-module.exports = function (config) {
-
+export default function (config) {
     const emitter = new EventEmitter();
 
     /**
@@ -60,21 +50,20 @@ module.exports = function (config) {
      * @apiParam {Object}   [repository]
      * @apiParam {Object}   [organization]
      */
-    this.post('/hookHub',  function (request, response) {
-
-        var data = JSON.stringify( request.body ),
-            sign = (request.get('X-Hub-Signature') || '').split('=');
+    this.post('/hookHub', (request, response) => {
+        var data = JSON.stringify(request.body),
+            sign = request.get('X-Hub-Signature')?.split('=');
 
         request.body.id = request.get('X-GitHub-Delivery');
 
         request.body.sign = sign;
 
         if (
-            sign[0] && (
-                sign[1] !==
+            sign?.[0] &&
+            sign?.[1] !==
                 Crypto.createHmac(sign[0], config.HookSecret)
-                    .update( data ).digest('hex')
-            )
+                    .update(data)
+                    .digest('hex')
         ) {
             /**
              * Signature verification failed
@@ -91,7 +80,7 @@ module.exports = function (config) {
              */
             emitter.emit('error', request.body);
 
-            return  response.status( 400 ).end('Signature verification failed');
+            return response.status(400).end('Signature verification failed');
         }
 
         emitter.emit(request.get('X-GitHub-Event'), request.body);
@@ -112,10 +101,13 @@ module.exports = function (config) {
      *
      * @apiParam {String} org
      */
-    this.get('/orgs/:org/events',  channel(emitter,  function (event, request) {
-
-        return  ((event.organization || '').login  ===  request.params.org);
-    }));
+    this.get(
+        '/orgs/:org/events',
+        channel(
+            emitter,
+            (event, request) => event.organization?.login === request.params.org
+        )
+    );
 
     /**
      * @api {get} /repos/:owner/:repo/events  Repository SSE
@@ -129,15 +121,15 @@ module.exports = function (config) {
      * @apiParam {String} owner
      * @apiParam {String} repo
      */
-    this.get('/repos/:owner/:repo/events', channel(
-        emitter,  function (event, request) {
-
-            return (
-                (event.repository || '').full_name  ===
+    this.get(
+        '/repos/:owner/:repo/events',
+        channel(
+            emitter,
+            (event, request) =>
+                event.repository?.full_name ===
                 request.params.owner + '/' + request.params.repo
-            );
-        }
-    ));
+        )
+    );
 
     /**
      * @api {get} /repos/:owner/:repo/issues/events  Repository issue SSE
@@ -151,15 +143,16 @@ module.exports = function (config) {
      * @apiParam {String} owner
      * @apiParam {String} repo
      */
-    this.get('/repos/:owner/:repo/issues/events', channel(
-        emitter,  function (event, request) {
-
-            return  event.issue && (
-                (event.repository || '').full_name  ===
-                request.params.owner + '/' + request.params.repo
-            );
-        }
-    ));
+    this.get(
+        '/repos/:owner/:repo/issues/events',
+        channel(
+            emitter,
+            (event, request) =>
+                event.issue &&
+                event.repository?.full_name ===
+                    request.params.owner + '/' + request.params.repo
+        )
+    );
 
     return emitter;
-};
+}
