@@ -1,7 +1,6 @@
 {
     "extends": "@tsconfig/node18/tsconfig.json",
     "compilerOptions": {
-        "checkJs": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "importHelpers": true,
@@ -9,7 +8,7 @@
         "sourceMap": true,
         "outDir": "dist"
     },
-    "include": ["core/*.js"],
+    "include": ["core/**/*"],
     "typedocOptions": {
         "name": "GitHub RESTful middleware",
         "excludeExternals": true,
