@@ -1,121 +1,40 @@
-/**
- * Express framework
- *
- * @namespace Express
- *
- * @see {@link https://expressjs.com/en/4x/api.html}
- */
+import 'reflect-metadata';
 
 /**
- * Express Request
+ * Sub set of Express & Koa `Request` object
  *
- * @memberof Express
- * @inner
- *
- * @typedef Request
+ * @typedef {object} CommonRequest
+ * @property {import('koajax').Request['method']} method
+ * @property {import('koa').Request['hostname']} hostname
+ * @property {import('koa').Request['originalUrl']} originalUrl
  *
  * @see {@link https://expressjs.com/en/4x/api.html#req}
+ * @see {@link https://koajs.com/#request}
  */
 
 /**
- * Express Response
+ * Sub set of Express & Koa `Response` object
  *
- * @memberof Express
- * @inner
- *
- * @typedef Response
+ * @typedef {object} CommonResponse
+ * @property {import('koa').Response['status'] | import('express').Response['status']} status
+ * @property {import('koa').Response['set']} set
+ * @property {import('koa').Response['get']} get
+ * @property {import('koa').Response['redirect']} redirect
  *
  * @see {@link https://expressjs.com/en/4x/api.html#res}
+ * @see {@link https://koajs.com/#response}
  */
 
-/**
- * Express Router
- *
- * @function Express.Router
- *
- * @see {@link https://expressjs.com/en/4x/api.html#router}
- */
-const Router = require('express').Router,
-    config = {
-        userAgent: 'Express Middleware - GitHub API',
-        apiRoot: 'https://api.github.com'
-    };
+import { OauthController } from './OAuth.js';
+import { LanguageController } from './Language.js';
+import { ProxyController } from './Proxy.js';
 
-/**
- * API configuration
- *
- * @typedef {object} APIConfig
- *
- * @property {string}   AppID
- * @property {string}   AppSecret
- * @property {string[]} [AppScope]
- * @property {string}   [HookSecret] - Secret code of a **Web hook**
- */
+export * from './OAuth.js';
+export * from './Language.js';
+export * from './Proxy.js';
 
-/**
- * Session data
- *
- * @typedef {object} SessionData
- *
- * @property {string} AccessToken - Access token of **OAuth 2.0**
- *
- * @see {@link https://developer.github.com/v3/users/#get-the-authenticated-user|More data about the Login User}
- */
-
-/**
- * Session handler
- *
- * @callback SessionHandler
- *
- * @param {Express~Request}  request
- * @param {Express~Response} response
- * @param {SessionData}      [data]
- */
-
-/**
- * Local configuration
- *
- * @typedef {object} LocalConfig
- *
- * @property {SessionHandler} setSession
- * @property {SessionHandler} getSession
- * @property {string}         [successURL=""] - URL to redirect when OAuth succeed
- */
-
-/**
- * Middleware instance
- *
- * @typedef {object} Middleware
- *
- * @property {Express.Router}        router
- * @property {external:EventEmitter} emitter
- */
-
-import OAuth from './OAuth';
-import Language from './Language';
-import Hook from './Hook';
-import Proxy from './Proxy';
-
-/**
- * @global
- *
- * @param {APIConfig}   API_Config
- * @param {LocalConfig} Local_Config
- *
- * @return {Middleware}
- */
-export default (API_Config, Local_Config) => {
-    const router = Router();
-
-    Object.assign(config, API_Config, Local_Config);
-
-    OAuth.call(router, config);
-
-    Language.call(router, config);
-
-    const emitter = Hook.call(router, config);
-
-    Proxy.call(router, config);
-
-    return { router, emitter };
-};
+export const controllers = [
+    OauthController,
+    LanguageController,
+    ProxyController
+];

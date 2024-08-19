@@ -1,7 +1,25 @@
-import { githubAPIClient } from './OAuth';
+import { Get, HeaderParam, JsonController, Param } from 'routing-controllers';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import { IsInt, IsString, Min } from 'class-validator';
 
+import { githubAPIClient } from './OAuth.js';
+
+/**
+ * @typedef {import ('@octokit/openapi-types').components['schemas']['repository']} Repository
+ */
+
+/**
+ * @typedef {Record<string, number>} LanguageSum
+ */
+
+/**
+ * @param {LanguageSum[]} list
+ */
 function Tech_Counter(list) {
-    var tech = {};
+    /**
+     * @type {Record<string, Language>}
+     */
+    const tech = {};
 
     for (let item of list)
         for (let name in item) {
@@ -12,91 +30,82 @@ function Tech_Counter(list) {
     return Object.values(tech).sort((A, B) => B.count - A.count);
 }
 
-async function Repository_Filter(request_option, OAuth) {
-    const { body: repos } = await githubAPIClient.get(request_option);
+/**
+ * @param {string} path
+ * @param {Record<string, string>} [header]
+ */
+async function Repository_Filter(path, header) {
+    /**
+     * @type {import('koajax').Response<Repository[]>}
+     */
+    const { body: repos = [] } = await githubAPIClient.get(path);
 
     const languages = await Promise.all(
         repos
             .filter(
-                ({ fork, permissions }) => !fork && (!OAuth || permissions.push)
+                ({ fork, permissions }) =>
+                    !fork && (!header?.['Authorization'] || permissions?.push)
             )
-            .map(({ languages_url }) => {
-                request_option.url = languages_url;
-
-                return githubAPIClient.get(request_option);
+            .map(async ({ languages_url }) => {
+                /**
+                 * @type {import('koajax').Response<LanguageSum>}
+                 */
+                const { body = {} } = await githubAPIClient.get(languages_url);
+                return body;
             })
     );
     return Tech_Counter(languages);
 }
 
 /**
- * @apiDefine Language
- *
- * @apiParam  {String}  name  Name of a User or Organization
- *
- * @apiSuccessExample  {json}  Technique(Language) array
- *     [
- *         {"name": "JavaScript",  "count": 123456},
- *         {"name": "HTML",  "count": 12345},
- *         {"name": "CSS",  "count": 1234}
- *     ]
+ * Technique/Language meta
  */
-export default function (config) {
-    var option = {
-        headers: { 'User-Agent': config.userAgent },
-        json: true
-    };
+export class Language {
+    /**
+     * @type {string}
+     */
+    @IsString()
+    name = '';
 
     /**
-     * @api  {get}  /users/:name/languages  Get Technique(Language)s of a User
-     *
-     * @apiName     getUserLanguage
-     * @apiVersion  0.4.1
-     * @apiGroup    User
-     *
-     * @apiUse Language
+     * @type {number}
      */
-    this.get('/users/:name/languages', request => {
-        const _option_ = {
-            ...option,
-            url: `${config.apiRoot}/users/${request.params.name}/repos?type=all`
-        };
-        return Repository_Filter(_option_);
-    });
+    @IsInt()
+    @Min(0)
+    count = 0;
+}
+
+@JsonController()
+export class LanguageController {
+    /**
+     * @param {string} name
+     */
+    @OpenAPI({ description: 'Get Technique(Language)s of a User' })
+    @Get('/users/:name/languages')
+    @ResponseSchema(Language, { isArray: true })
+    getUserLanguages(@Param('name') name) {
+        return Repository_Filter(`users/${name}/repos?type=all`);
+    }
 
     /**
-     * @api  {get}  /user/languages  Get Technique(Language)s of an OAuth User
-     *
-     * @apiName     getOAuthUserLanguage
-     * @apiVersion  0.4.1
-     * @apiGroup    User
+     * @param {string} Authorization
      */
-    this.get('/user/languages', async (request, response) => {
-        const session = await config.getSession(request, response);
-
-        var _option_ = { ...option };
-
-        _option_.headers.Authorization = `Bearer ${session.AccessToken}`;
-
-        _option_.url = `${config.apiRoot}/user/repos?affiliation=owner,collaborator`;
-
-        return Repository_Filter(_option_, true);
-    });
+    @OpenAPI({ description: 'Get Technique(Language)s of an OAuth User' })
+    @Get('/user/languages')
+    @ResponseSchema(Language, { isArray: true })
+    async getOAuthUserLanguages(@HeaderParam('Authorization') Authorization) {
+        return Repository_Filter('user/repos?affiliation=owner,collaborator', {
+            Authorization
+        });
+    }
 
     /**
-     * @api  {get}  /orgs/:name/languages  Get Technique(Language)s of an Organization
-     *
-     * @apiName     getOrganizationLanguage
-     * @apiVersion  0.4.1
-     * @apiGroup    Organization
-     *
-     * @apiUse Language
+     * @param {string} name
      */
-    this.get('/orgs/:name/languages', request => {
-        const _option_ = {
-            ...option,
-            url: `${config.apiRoot}/orgs/${request.params.name}/repos`
-        };
-        return Repository_Filter(_option_);
-    });
+    @OpenAPI({ description: 'Get Technique(Language)s of an Organization' })
+    @Get('/orgs/:name/languages')
+    @ResponseSchema(Language, { isArray: true })
+    getOrganizationLanguages(@Param('name') name) {
+        return Repository_Filter(`orgs/${name}/repos`);
+    }
 }
