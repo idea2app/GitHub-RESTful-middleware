@@ -1,75 +1,97 @@
 import { HTTPClient } from 'koajax';
-import { resolve } from 'url';
+import {
+    Get,
+    HeaderParam,
+    JsonController,
+    QueryParam,
+    Redirect,
+    Req,
+    Res
+} from 'routing-controllers';
+import { OpenAPI } from 'routing-controllers-openapi';
+
+/**
+ * @param  {import('koajax').Context} context
+ * @param  {() => Promise<void>} next
+ */
+function setUserAgent(context, next) {
+    context.request.headers = {
+        'User-Agent':
+            process.env.HTTP_USER_AGENT || 'GitHub RESTful middleware',
+        ...context.request.headers
+    };
+    return next();
+}
 
 export const githubClient = new HTTPClient({
-        baseURI: 'https://github.com/',
-        responseType: 'json'
-    }),
-    githubAPIClient = new HTTPClient({
-        baseURI: 'https://api.github.com/',
-        responseType: 'json'
-    });
+    baseURI: 'https://github.com/',
+    responseType: 'json'
+}).use(setUserAgent);
 
-export default function (config) {
+export const githubAPIClient = new HTTPClient({
+    baseURI: 'https://api.github.com/',
+    responseType: 'json'
+}).use(setUserAgent);
+
+@JsonController('/OAuth')
+export class OauthController {
     /**
-     * @api  {get}  /OAuth  Redirect to OAuth Page of GitHub
-     *
-     * @apiName     OAuth_entry
-     * @apiVersion  0.4.0
-     * @apiGroup    OAuth
-     *
-     * @apiHeader  {String}  Referer  URL of Source Page
+     * @param  {string} referer - Referer  URL of Source Page
      */
+    @OpenAPI({ description: 'Redirect to OAuth Page of GitHub' })
+    @Get()
+    @Redirect(`${githubClient.baseURI}login/oauth/authorize`)
+    goToSignInPage(@HeaderParam('Referer') referer) {
+        const { GITHUB_OAUTH_CLIENT_ID = '', GITHUB_OAUTH_SCOPE = '' } =
+            process.env;
 
-    this.get('/OAuth', function (request, response) {
-        const path = `${githubClient.baseURI}login/oauth/authorize?${new URLSearchParams(
+        return `${githubClient.baseURI}login/oauth/authorize?${new URLSearchParams(
             {
-                client_id: config.AppID,
-                scope: (config.AppScope || []).join(' '),
-                state: Buffer.from(request.headers.referer).toString('base64')
+                client_id: GITHUB_OAUTH_CLIENT_ID,
+                scope: GITHUB_OAUTH_SCOPE,
+                state: Buffer.from(referer).toString('base64')
             }
         )}`;
-        response.redirect(path);
-    });
+    }
 
     /**
-     * @api  {get}  /OAuth/callback  OAuth Callback for GitHub
-     *
-     * @apiName     OAuth_callback
-     * @apiVersion  0.4.0
-     * @apiGroup    OAuth
-     *
-     * @apiParam  {String}  code   Disposable checksum
-     * @apiParam  {String}  state  Last Page Referer of this site in Base64
+     * @param  {string}  code   Disposable checksum
+     * @param  {string}  state  Last Page Referer of this site in Base64
+     * @param  {import('./index.js').CommonRequest} request
+     * @param  {import('./index.js').CommonResponse} response
      */
+    @OpenAPI({ description: 'OAuth Callback for GitHub' })
+    @Get('/callback')
+    async backToRefererPage(
+        @QueryParam('state') state,
+        @QueryParam('code') code,
+        @Req() request,
+        @Res() response
+    ) {
+        const { GITHUB_OAUTH_CLIENT_ID = '', GITHUB_OAUTH_CLIENT_SECRET = '' } =
+            process.env;
 
-    this.get('/OAuth/callback', async (request, response) => {
         //  Local Debug
 
-        const { hostname, protocol, host, href } = new URL(
-            Buffer.from(request.query.state, 'base64') + ''
-        );
+        const refererURL = new URL(Buffer.from(state, 'base64') + '');
+        const { hostname, protocol, host } = refererURL;
 
         if (hostname === 'localhost' && request.hostname !== 'localhost')
             return response.redirect(
                 `${protocol}//${host + request.originalUrl}`
             );
-        //  Access Token  &  User Profile
-
+        /**
+         * @type {import('koajax').Response<{access_token: string}>}
+         *
+         * @see {@link https://developer.github.com/v3/users/#get-the-authenticated-user|More data about the Login User}
+         */
         const { body } = await githubClient.post('login/oauth/access_token', {
-            client_id: config.AppID,
-            client_secret: config.AppSecret,
-            code: request.query.code
+            client_id: GITHUB_OAUTH_CLIENT_ID,
+            client_secret: GITHUB_OAUTH_CLIENT_SECRET,
+            code
         });
-        const { body: user } = await githubAPIClient.get('user', {
-            'User-Agent': config.userAgent,
-            Authorization: `Bearer ${body.access_token}`
-        });
+        refererURL.searchParams.set('access_token', body?.access_token || '');
 
-        // data.AccessToken = AccessToken;
-
-        // return config.setSession(request, response, data);
-
-        response.redirect(resolve(href, config.successURL || ''));
-    });
+        response.redirect(refererURL + '');
+    }
 }
