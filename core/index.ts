@@ -1,29 +1,29 @@
 import 'reflect-metadata';
 
+import { Response as ExpressResponse } from 'express';
+import { Request as KoaRequest, Response as KoaResponse } from 'koa';
+import { Request as KoAJAX_Request } from 'koajax';
+
 /**
  * Sub set of Express & Koa `Request` object
  *
- * @typedef {object} CommonRequest
- * @property {import('koajax').Request['method']} method
- * @property {import('koa').Request['hostname']} hostname
- * @property {import('koa').Request['originalUrl']} originalUrl
- *
  * @see {@link https://expressjs.com/en/4x/api.html#req}
  * @see {@link https://koajs.com/#request}
+ * @see {@link https://web-cell.dev/KoAJAX/interfaces/Request.html}
  */
+export type CommonRequest = Pick<KoAJAX_Request, 'method'> &
+    Pick<KoaRequest, 'hostname' | 'originalUrl'>;
 
 /**
  * Sub set of Express & Koa `Response` object
  *
- * @typedef {object} CommonResponse
- * @property {import('koa').Response['status'] | import('express').Response['status']} status
- * @property {import('koa').Response['set']} set
- * @property {import('koa').Response['get']} get
- * @property {import('koa').Response['redirect']} redirect
- *
  * @see {@link https://expressjs.com/en/4x/api.html#res}
  * @see {@link https://koajs.com/#response}
  */
+export interface CommonResponse
+    extends Pick<KoaResponse, 'set' | 'get' | 'redirect'> {
+    status: ExpressResponse['status'] | KoaResponse['status'];
+}
 
 import { OauthController } from './OAuth.js';
 import { LanguageController } from './Language.js';

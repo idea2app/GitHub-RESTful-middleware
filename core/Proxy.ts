@@ -10,11 +10,9 @@ import {
 } from 'routing-controllers';
 
 import { githubAPIClient, githubClient } from './OAuth.js';
+import { CommonRequest, CommonResponse } from './index.js';
 
-/**
- * @type {Record<string, boolean>}
- */
-const CORS_Header = {
+const CORS_Header: Record<string, boolean> = {
     'access-control-allow-methods': true,
     'access-control-allow-headers': true,
     'access-control-expose-headers': true
@@ -23,11 +21,11 @@ const CORS_Header = {
 @Controller()
 export class ProxyController {
     /**
-     * @param  {string}  owner  ID of a User or Organization
-     * @param  {string}  repo   Name of a Repository
-     * @param  {number}  id     ID of a Pull Request
-     * @param  {string}  accept  Accept header
-     * @param  {import('./index.js').CommonResponse} response
+     * @param  owner     ID of a User or Organization
+     * @param  repo      Name of a Repository
+     * @param  id        ID of a Pull Request
+     * @param  accept    Accept header
+     * @param  response
      *
      * @example
      * HTML converted from Diff by Diff2HTML
@@ -37,35 +35,34 @@ export class ProxyController {
      */
     @Get('/repos/:owner/:repo/pull/:id.diff')
     async getDiffFile(
-        @Param('owner') owner,
-        @Param('repo') repo,
-        @Param('id') id,
-        @HeaderParam('Accept') accept,
-        @Res() response
+        @Param('owner') owner: string,
+        @Param('repo') repo: string,
+        @Param('id') id: number,
+        @HeaderParam('Accept') accept = '',
+        @Res() response: CommonResponse
     ) {
-        const { body: data } = await githubClient.get(
+        const { body } = await githubClient.get<string>(
             `/repos/${owner}/${repo}/pull/${id}.diff`
         );
         const acceptHTML = accept.includes('html');
 
         response.set('Content-Type', acceptHTML ? 'text/html' : 'text/plain');
 
-        return acceptHTML ? html(data, { outputFormat: 'side-by-side' }) : data;
+        return acceptHTML
+            ? html(body!, { outputFormat: 'side-by-side' })
+            : body!;
     }
 
     /**
      * Other API Proxy
-     *
-     * @param {import('./index.js').CommonRequest}  request
-     * @param {import('./index.js').CommonResponse} response
      */
     @All('*')
     async proxyAll(
         @HeaderParam('Accept') Accept = '',
         @HeaderParam('Authorization') Authorization = '',
         @HeaderParam('Cookie') Cookie = '',
-        @Req() request,
-        @Res() response
+        @Req() request: CommonRequest,
+        @Res() response: CommonResponse
     ) {
         const acceptJSON = Accept.includes('json'),
             header = { Accept, Authorization, Cookie };
