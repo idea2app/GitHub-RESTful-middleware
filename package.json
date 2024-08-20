@@ -42,8 +42,9 @@
         "prepare": "husky",
         "docs": "typedoc core/",
         "build": "rm -rf dist/ docs/  &&  tsc  &&  npm run docs",
-        "start": "npm run build  &&  npx serve docs/",
-        "test": "lint-staged"
+        "start": "npm run docs  &&  npx serve docs/",
+        "test": "lint-staged",
+        "prepublishOnly": "npm test  &&  npm run build"
     },
     "devDependencies": {
         "@octokit/openapi-types": "^22.2.0",
