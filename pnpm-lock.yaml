@@ -14,12 +14,18 @@ importers:
       '@types/koa':
         specifier: ^2.15.0
         version: 2.15.0
+      better-sse:
+        specifier: ^0.12.1
+        version: 0.12.1
       class-validator:
         specifier: ^0.14.1
         version: 0.14.1
       diff2html:
         specifier: ^3.4.48
         version: 3.4.48
+      iterable-observer:
+        specifier: ^1.1.0
+        version: 1.1.0
       koajax:
         specifier: ^2.0.0
         version: 2.0.0(typescript@5.5.4)
@@ -316,6 +322,10 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  better-sse@0.12.1:
+    resolution: {integrity: sha512-U8BiD7DjQGG72kUiCJ5NM5ioKCqVeE+8Nd3pOPFtYx6PO1s0YtZtwNmImdTqSSmGaqDCmfzNwXcXdiAB4mCJrQ==}
+    engines: {node: '>=12', pnpm: '>=9'}
 
   body-parser@1.20.2:
     resolution: {integrity: sha512-ml9pReCu3M61kGlqoTm2umSXTlRTuGTx0bfYj+uIUKKYycG5NtSbeetV3faSU6R7ajOPw0g/J1PvK4qNy7s5bA==}
@@ -1600,6 +1610,8 @@ snapshots:
     optional: true
 
   balanced-match@1.0.2: {}
+
+  better-sse@0.12.1: {}
 
   body-parser@1.20.2:
     dependencies:
