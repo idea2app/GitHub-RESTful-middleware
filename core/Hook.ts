@@ -1,69 +1,80 @@
-/**
- * Event Emitter
- *
- * @external EventEmitter
- *
- * @see {@link https://nodejs.org/dist/latest-v6.x/docs/api/events.html#events_class_eventemitter|Node.JS - Event module}
- */
-import EventEmitter from 'events';
-import Crypto from 'crypto';
-import SSE from 'express-sse';
+import { components } from '@octokit/openapi-types';
+import { createChannel, createSession } from 'better-sse';
+import { createHmac } from 'crypto';
+import { IncomingMessage, ServerResponse } from 'http';
+import { Context } from 'koa';
+import {
+    Body,
+    Controller,
+    Ctx,
+    Get,
+    HeaderParam,
+    NotAcceptableError,
+    OnUndefined,
+    Param,
+    Post,
+    Req,
+    Res,
+    UnauthorizedError
+} from 'routing-controllers';
+import { OpenAPI } from 'routing-controllers-openapi';
 
-function channel(source, filter) {
-    var target = new SSE();
+import { Repository } from './index.js';
 
-    return function (request, response, next) {
-        if (!request.accepts('text/event-stream')) return next();
+export type HookEvent = components['schemas']['hook-delivery-item'] & {
+    id: number;
+    signature: string;
+    repository?: Repository;
+    issue?: components['schemas']['issue'];
+};
+export type EventFilter = Partial<
+    Record<'owner' | 'repository' | 'event', string>
+>;
 
-        target.init(request, response);
+@Controller()
+export class HookController {
+    channel = createChannel<{}, EventFilter>();
 
-        function send(event) {
-            if (!filter.call(this, event, request)) return;
+    async bootSSE(
+        request: IncomingMessage,
+        response: ServerResponse,
+        state: EventFilter
+    ) {
+        if (!request.headers.accept?.includes('text/event-stream'))
+            throw new NotAcceptableError();
 
-            target.send(event, event.action);
+        const session = await createSession<EventFilter>(request, response);
+        session.state = state;
 
-            target.send(event);
-        }
-
-        source.on('*', send);
-
-        request.on('close', () => source.removeListener('*', send));
-    };
-}
-
-export default function (config) {
-    const emitter = new EventEmitter();
+        this.channel.register(session);
+    }
 
     /**
-     * @api {post} /hookHub  Receive all kinds of Event from a Web Hook
+     * @param  name       `X-GitHub-Event`: Event name
+     * @param  id         `X-GitHub-Delivery`: Unique ID for this delivery
+     * @param  signature  `X-Hub-Signature`: HMAC hex digest of the payload
      *
-     * @apiName    postEvent
-     * @apiVersion 0.5.0
-     * @apiGroup   Event
-     *
-     * @apiHeader {String} X-GitHub-Event     Event name
-     * @apiHeader {String} X-GitHub-Delivery  Unique ID for this delivery
-     * @apiHeader {String} X-Hub-Signature    HMAC hex digest of the payload
-     *
-     * @apiParam {String}   action         Event name
-     * @apiParam {Object}   [repository]
-     * @apiParam {Object}   [organization]
+     * @see {@link https://docs.github.com/webhooks/webhook-events-and-payloads#delivery-headers}
      */
-    this.post('/hookHub', (request, response) => {
-        var data = JSON.stringify(request.body),
-            sign = request.get('X-Hub-Signature')?.split('=');
+    @OpenAPI({ description: 'Receive all kinds of Event from a Web Hook' })
+    @Post('/hookHub')
+    @OnUndefined(204)
+    emitEvent(
+        @HeaderParam('X-GitHub-Event') name = '',
+        @HeaderParam('X-GitHub-Delivery') id = 0,
+        @HeaderParam('X-Hub-Signature') signature = '',
+        @Body() event: HookEvent
+    ) {
+        const { GITHUB_HOOK_SECRET = '' } = process.env,
+            data = JSON.stringify(event),
+            [algorithm, signValue] = signature?.split('=') || [];
+        const checkValue = createHmac(algorithm, GITHUB_HOOK_SECRET)
+            .update(data)
+            .digest('hex');
 
-        request.body.id = request.get('X-GitHub-Delivery');
+        event = { ...event, id, signature };
 
-        request.body.sign = sign;
-
-        if (
-            sign?.[0] &&
-            sign?.[1] !==
-                Crypto.createHmac(sign[0], config.HookSecret)
-                    .update(data)
-                    .digest('hex')
-        ) {
+        if (algorithm && signValue !== checkValue) {
             /**
              * Signature verification failed
              *
@@ -77,81 +88,65 @@ export default function (config) {
              *
              * @see {@link https://developer.github.com/webhooks/#payloads}
              */
-            emitter.emit('error', request.body);
+            this.channel.emit('error', event);
 
-            return response.status(400).end('Signature verification failed');
+            throw new UnauthorizedError('Signature verification failed');
         }
 
-        emitter.emit(request.get('X-GitHub-Event'), request.body);
+        this.channel.broadcast(event, name, {
+            filter: ({ state: { event: type, owner, repository } }) =>
+                (!type || type === event.event) &&
+                (!owner || owner === event.repository?.owner.login) &&
+                (!repository || repository === event.repository?.name)
+        });
+    }
 
-        emitter.emit('*', request.body);
+    @OpenAPI({
+        description: 'Organization SSE'
+    })
+    @Get('/orgs/:org/events')
+    @OnUndefined(204)
+    getOrgEvent(
+        @Param('org') owner: string,
+        @Req() request: IncomingMessage,
+        @Res() response: ServerResponse,
+        @Ctx() { req, res } = {} as Context
+    ) {
+        return this.bootSSE(req || request, res || response, { owner });
+    }
 
-        response.end();
-    });
+    @OpenAPI({
+        description: 'Repository SSE'
+    })
+    @Get('/repos/:owner/:repo/events')
+    getRepoEvent(
+        @Param('owner') owner: string,
+        @Param('repo') repository: string,
+        @Req() request: IncomingMessage,
+        @Res() response: ServerResponse,
+        @Ctx() { req, res } = {} as Context
+    ) {
+        return this.bootSSE(req || request, res || response, {
+            owner,
+            repository
+        });
+    }
 
-    /**
-     * @api {get} /orgs/:org/events  Organization SSE
-     *
-     * @apiName    getOrgEvent
-     * @apiVersion 0.5.1
-     * @apiGroup   Event
-     *
-     * @apiHeader {String} Accept=text/event-stream
-     *
-     * @apiParam {String} org
-     */
-    this.get(
-        '/orgs/:org/events',
-        channel(
-            emitter,
-            (event, request) => event.organization?.login === request.params.org
-        )
-    );
-
-    /**
-     * @api {get} /repos/:owner/:repo/events  Repository SSE
-     *
-     * @apiName    getRepoEvent
-     * @apiVersion 0.5.1
-     * @apiGroup   Event
-     *
-     * @apiHeader {String} Accept=text/event-stream
-     *
-     * @apiParam {String} owner
-     * @apiParam {String} repo
-     */
-    this.get(
-        '/repos/:owner/:repo/events',
-        channel(
-            emitter,
-            (event, request) =>
-                event.repository?.full_name ===
-                request.params.owner + '/' + request.params.repo
-        )
-    );
-
-    /**
-     * @api {get} /repos/:owner/:repo/issues/events  Repository issue SSE
-     *
-     * @apiName    getIssueEvent
-     * @apiVersion 0.5.1
-     * @apiGroup   Event
-     *
-     * @apiHeader {String} Accept=text/event-stream
-     *
-     * @apiParam {String} owner
-     * @apiParam {String} repo
-     */
-    this.get(
-        '/repos/:owner/:repo/issues/events',
-        channel(
-            emitter,
-            (event, request) =>
-                event.issue &&
-                event.repository?.full_name ===
-                    request.params.owner + '/' + request.params.repo
-        )
-    );
-
-    return emitter;
+    @OpenAPI({
+        description: 'Repository issue SSE'
+    })
+    @Get('/repos/:owner/:repo/issues/events')
+    getIssueEvent(
+        @Param('owner') owner: string,
+        @Param('repo') repository: string,
+        @Req() request: IncomingMessage,
+        @Res() response: ServerResponse,
+        @Ctx() { req, res } = {} as Context
+    ) {
+        return this.bootSSE(req || request, res || response, {
+            owner,
+            repository,
+            event: 'issues'
+        });
+    }
 }

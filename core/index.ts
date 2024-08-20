@@ -27,14 +27,17 @@ export interface CommonResponse
 
 import { OauthController } from './OAuth.js';
 import { LanguageController } from './Language.js';
+import { HookController } from './Hook.js';
 import { ProxyController } from './Proxy.js';
 
 export * from './OAuth.js';
 export * from './Language.js';
+export * from './Hook.js';
 export * from './Proxy.js';
 
 export const controllers = [
     OauthController,
     LanguageController,
+    HookController,
     ProxyController
 ];
