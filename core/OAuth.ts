@@ -1,4 +1,4 @@
-import { HTTPClient, Middleware } from 'koajax';
+import KoAJAX from 'koajax';
 import {
     Get,
     HeaderParam,
@@ -12,7 +12,7 @@ import { OpenAPI } from 'routing-controllers-openapi';
 
 import { CommonRequest, CommonResponse } from './index.js';
 
-const setUserAgent: Middleware = (context, next) => {
+const setUserAgent: KoAJAX.Middleware = (context, next) => {
     context.request.headers = {
         'User-Agent':
             process.env.HTTP_USER_AGENT || 'GitHub RESTful middleware',
@@ -21,12 +21,12 @@ const setUserAgent: Middleware = (context, next) => {
     return next();
 };
 
-export const githubClient = new HTTPClient({
+export const githubClient = new KoAJAX.HTTPClient({
     baseURI: 'https://github.com/',
     responseType: 'json'
 }).use(setUserAgent);
 
-export const githubAPIClient = new HTTPClient({
+export const githubAPIClient = new KoAJAX.HTTPClient({
     baseURI: 'https://api.github.com/',
     responseType: 'json'
 }).use(setUserAgent);

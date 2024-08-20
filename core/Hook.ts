@@ -1,5 +1,5 @@
 import { components } from '@octokit/openapi-types';
-import { createChannel, createSession } from 'better-sse';
+import BetterSSE from 'better-sse';
 import { createHmac } from 'crypto';
 import { IncomingMessage, ServerResponse } from 'http';
 import { Context } from 'koa';
@@ -33,7 +33,7 @@ export type EventFilter = Partial<
 
 @Controller()
 export class HookController {
-    channel = createChannel<{}, EventFilter>();
+    channel = BetterSSE.createChannel<{}, EventFilter>();
 
     async bootSSE(
         request: IncomingMessage,
@@ -43,7 +43,10 @@ export class HookController {
         if (!request.headers.accept?.includes('text/event-stream'))
             throw new NotAcceptableError();
 
-        const session = await createSession<EventFilter>(request, response);
+        const session = await BetterSSE.createSession<EventFilter>(
+            request,
+            response
+        );
         session.state = state;
 
         this.channel.register(session);

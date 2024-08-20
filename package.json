@@ -29,6 +29,7 @@
         "@types/express": "^4.17.21",
         "@types/koa": "^2.15.0",
         "better-sse": "^0.12.1",
+        "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
         "diff2html": "^3.4.48",
         "iterable-observer": "^1.1.0",
@@ -43,6 +44,7 @@
         "docs": "typedoc core/",
         "build": "rm -rf dist/ docs/  &&  tsc  &&  npm run docs",
         "start": "npm run docs  &&  npx serve docs/",
+        "debug": "tsx --test test/*.spec.ts",
         "test": "lint-staged",
         "prepublishOnly": "npm test  &&  npm run build"
     },
@@ -51,8 +53,10 @@
         "@tsconfig/node18": "^18.2.4",
         "@types/node": "^18.19.44",
         "husky": "^9.1.4",
+        "koa": "^2.15.3",
         "lint-staged": "^15.2.9",
         "prettier": "^3.3.3",
+        "tsx": "^4.17.0",
         "typedoc": "^0.26.6",
         "typescript": "^5.5.4"
     },

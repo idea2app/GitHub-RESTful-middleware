@@ -1,6 +1,7 @@
 import { html } from 'diff2html';
 import {
     All,
+    Body,
     Controller,
     Get,
     HeaderParam,
@@ -56,11 +57,13 @@ export class ProxyController {
     /**
      * Other API Proxy
      */
-    @All('*')
+    @All('/proxy/:path*')
     async proxyAll(
         @HeaderParam('Accept') Accept = '',
         @HeaderParam('Authorization') Authorization = '',
         @HeaderParam('Cookie') Cookie = '',
+        @Param('path') path: string,
+        @Body() body: any,
         @Req() request: CommonRequest,
         @Res() response: CommonResponse
     ) {
@@ -72,8 +75,9 @@ export class ProxyController {
             body: data
         } = await githubAPIClient.request({
             method: request.method,
-            path: request.originalUrl,
+            path,
             headers: header,
+            body,
             responseType: acceptJSON ? 'json' : 'arraybuffer'
         });
 
