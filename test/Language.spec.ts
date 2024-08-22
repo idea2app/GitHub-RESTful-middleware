@@ -10,7 +10,8 @@ describe('Language API', () => {
 
     it('should get a language list of a user', async () => {
         const { body } = await client.get<Language[]>(
-            '/users/TechQuery/languages'
+            '/users/TechQuery/languages',
+            { Authorization: `Bearer ${process.env.GITHUB_PAT}` }
         );
         assert(body instanceof Array);
     });

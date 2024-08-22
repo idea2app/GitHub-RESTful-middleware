@@ -30,8 +30,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       koajax:
-        specifier: ^2.0.0
-        version: 2.0.0(typescript@5.5.4)
+        specifier: ^1.1.2
+        version: 1.1.2(typescript@5.5.4)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -52,11 +52,11 @@ importers:
         specifier: ^18.2.4
         version: 18.2.4
       '@types/node':
-        specifier: ^18.19.44
-        version: 18.19.44
+        specifier: ^18.19.45
+        version: 18.19.45
       husky:
-        specifier: ^9.1.4
-        version: 9.1.4
+        specifier: ^9.1.5
+        version: 9.1.5
       koa:
         specifier: ^2.15.3
         version: 2.15.3
@@ -412,8 +412,8 @@ packages:
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
-  '@types/node@18.19.44':
-    resolution: {integrity: sha512-ZsbGerYg72WMXUIE9fYxtvfzLEuq6q8mKERdWFnqTmOvudMxnz+CBNRoOwJ2kNpFOncrKjT1hZwxjlFgQ9qvQA==}
+  '@types/node@18.19.45':
+    resolution: {integrity: sha512-VZxPKNNhjKmaC1SUYowuXSRSMGyQGmQjvvA1xE4QZ0xce2kLtEhPDS+kqpCPBZYgqblCLQ2DAjSzmgCM5auvhA==}
 
   '@types/qs@6.9.15':
     resolution: {integrity: sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==}
@@ -842,8 +842,8 @@ packages:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
 
-  husky@9.1.4:
-    resolution: {integrity: sha512-bho94YyReb4JV7LYWRWxZ/xr6TtOTt8cMfmQ39MQYJ7f/YE268s3GdghGwi+y4zAeqewE5zYLvuhV0M0ijsDEA==}
+  husky@9.1.5:
+    resolution: {integrity: sha512-rowAVRUBfI0b4+niA4SJMhfQwc107VLkBUgEYYAOQAbqDCnra1nYh83hF/MDmhYs9t9n1E3DuKOrs2LYNC+0Ag==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -930,8 +930,9 @@ packages:
     resolution: {integrity: sha512-j/8tY9j5t+GVMLeioLaxweJiKUayFhlGqNTzf2ZGwL0ZCQijd2RLHK0SLW5Tsko8YyyqCZC2cojIb0/s62qTAg==}
     engines: {node: ^4.8.4 || ^6.10.1 || ^7.10.1 || >= 8.1.4}
 
-  koajax@2.0.0:
-    resolution: {integrity: sha512-05kjwLO43jb9/dLZfIBjkMvGRQd2j9lRnyR+ijin33tmqzSQIrSzYo9pfn/jdbrlcMHOHoHJGZbQLt8zuGGuqA==}
+  koajax@1.1.2:
+    resolution: {integrity: sha512-TGWJhGpojfSYdqGIKK8CWwMhUY1LYDyvodt6LywHVYEH6qq38/3DgW+FKTCV88O59G0J4W2XFbBTF8nvZ/J/nw==}
+    deprecated: Don't use versions with old API & bugs
     peerDependencies:
       jsdom: '>=21'
 
@@ -1388,10 +1389,6 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  web-streams-polyfill@4.0.0:
-    resolution: {integrity: sha512-0zJXHRAYEjM2tUfZ2DiSOHAa2aw1tisnnhU3ufD57R8iefL+DcdJyRBRyJpG+NUimDgbTI/lH+gAE1PAvV3Cgw==}
-    engines: {node: '>= 8'}
-
   web-utility@4.4.0:
     resolution: {integrity: sha512-Bw0RcX5jBNuw+FQ2NKkkegNK07czjXoUtDNpRO+2ueNNv3FL8GsTTU27eM+17bzFPpYqukAdkCLJf5ZAYiDZtg==}
     peerDependencies:
@@ -1739,16 +1736,16 @@ snapshots:
 
   '@types/accepts@1.3.7':
     dependencies:
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
 
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
 
   '@types/content-disposition@0.5.8': {}
 
@@ -1757,11 +1754,11 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/express': 4.17.21
       '@types/keygrip': 1.0.6
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
 
   '@types/express-serve-static-core@4.19.5':
     dependencies:
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
       '@types/qs': 6.9.15
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -1796,11 +1793,11 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/keygrip': 1.0.6
       '@types/koa-compose': 3.2.8
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
 
   '@types/mime@1.3.5': {}
 
-  '@types/node@18.19.44':
+  '@types/node@18.19.45':
     dependencies:
       undici-types: 5.26.5
 
@@ -1811,12 +1808,12 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 18.19.44
+      '@types/node': 18.19.45
       '@types/send': 0.17.4
 
   '@types/unist@3.0.3': {}
@@ -2323,7 +2320,7 @@ snapshots:
 
   human-signals@5.0.0: {}
 
-  husky@9.1.4: {}
+  husky@9.1.5: {}
 
   iconv-lite@0.4.24:
     dependencies:
@@ -2424,12 +2421,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  koajax@2.0.0(typescript@5.5.4):
+  koajax@1.1.2(typescript@5.5.4):
     dependencies:
       '@swc/helpers': 0.5.12
       iterable-observer: 1.1.0
       regenerator-runtime: 0.14.1
-      web-streams-polyfill: 4.0.0
       web-utility: 4.4.0(typescript@5.5.4)
     transitivePeerDependencies:
       - typescript
@@ -2922,8 +2918,6 @@ snapshots:
   validator@13.12.0: {}
 
   vary@1.1.2: {}
-
-  web-streams-polyfill@4.0.0: {}
 
   web-utility@4.4.0(typescript@5.5.4):
     dependencies:

@@ -61,8 +61,13 @@ export class LanguageController {
     })
     @Get('/users/:name/languages')
     @ResponseSchema(Language, { isArray: true })
-    getUserLanguages(@Param('name') name: string) {
-        return Repository_Filter(`users/${name}/repos?type=all`);
+    getUserLanguages(
+        @Param('name') name: string,
+        @HeaderParam('Authorization') Authorization = ''
+    ) {
+        return Repository_Filter(`users/${name}/repos?type=all`, {
+            Authorization
+        });
     }
 
     @OpenAPI({
@@ -83,7 +88,10 @@ export class LanguageController {
     })
     @Get('/orgs/:name/languages')
     @ResponseSchema(Language, { isArray: true })
-    getOrganizationLanguages(@Param('name') name = '') {
-        return Repository_Filter(`orgs/${name}/repos`);
+    getOrganizationLanguages(
+        @Param('name') name = '',
+        @HeaderParam('Authorization') Authorization = ''
+    ) {
+        return Repository_Filter(`orgs/${name}/repos`, { Authorization });
     }
 }
