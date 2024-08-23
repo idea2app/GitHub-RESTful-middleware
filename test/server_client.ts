@@ -33,3 +33,5 @@ export const client = new KoAJAX.HTTPClient({
     baseURI: `http://127.0.0.1:${PORT}`,
     responseType: 'json'
 });
+
+export const header = { Authorization: `Bearer ${process.env.GITHUB_PAT}` };

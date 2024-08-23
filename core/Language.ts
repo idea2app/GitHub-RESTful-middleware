@@ -9,7 +9,7 @@ export type Repository = components['schemas']['repository'];
 
 export type LanguageSum = Record<string, number>;
 
-function Tech_Counter(list: LanguageSum[]) {
+function countTech(list: LanguageSum[]) {
     const tech: Record<string, Language> = {};
 
     for (let item of list)
@@ -21,11 +21,8 @@ function Tech_Counter(list: LanguageSum[]) {
     return Object.values(tech).sort((A, B) => B.count - A.count);
 }
 
-async function Repository_Filter(
-    path: string,
-    header?: Record<string, string>
-) {
-    const { body } = await githubAPIClient.get<Repository[]>(path);
+async function filterRepository(path: string, header?: Record<string, string>) {
+    const { body } = await githubAPIClient.get<Repository[]>(path, header);
 
     const languages = await Promise.all(
         body!
@@ -34,12 +31,14 @@ async function Repository_Filter(
                     !fork && (!header?.['Authorization'] || permissions?.push)
             )
             .map(async ({ languages_url }) => {
-                const { body } =
-                    await githubAPIClient.get<LanguageSum>(languages_url);
+                const { body } = await githubAPIClient.get<LanguageSum>(
+                    languages_url,
+                    header
+                );
                 return body!;
             })
     );
-    return Tech_Counter(languages);
+    return countTech(languages);
 }
 
 /**
@@ -65,7 +64,7 @@ export class LanguageController {
         @Param('name') name: string,
         @HeaderParam('Authorization') Authorization = ''
     ) {
-        return Repository_Filter(`users/${name}/repos?type=all`, {
+        return filterRepository(`users/${name}/repos?type=all`, {
             Authorization
         });
     }
@@ -78,7 +77,7 @@ export class LanguageController {
     async getOAuthUserLanguages(
         @HeaderParam('Authorization') Authorization = ''
     ) {
-        return Repository_Filter('user/repos?affiliation=owner,collaborator', {
+        return filterRepository('user/repos?affiliation=owner,collaborator', {
             Authorization
         });
     }
@@ -92,6 +91,6 @@ export class LanguageController {
         @Param('name') name = '',
         @HeaderParam('Authorization') Authorization = ''
     ) {
-        return Repository_Filter(`orgs/${name}/repos`, { Authorization });
+        return filterRepository(`orgs/${name}/repos`, { Authorization });
     }
 }

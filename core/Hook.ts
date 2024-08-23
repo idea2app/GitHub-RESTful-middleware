@@ -45,10 +45,9 @@ export class HookController {
 
         const session = await BetterSSE.createSession<EventFilter>(
             request,
-            response
+            response,
+            { state }
         );
-        session.state = state;
-
         this.channel.register(session);
     }
 

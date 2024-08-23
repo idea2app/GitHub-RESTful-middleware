@@ -1,4 +1,4 @@
-import KoAJAX from 'koajax';
+import KoAJAX, { Context } from 'koajax';
 import {
     Get,
     HeaderParam,
@@ -12,11 +12,11 @@ import { OpenAPI } from 'routing-controllers-openapi';
 
 import { CommonRequest, CommonResponse } from './index.js';
 
-const setUserAgent: KoAJAX.Middleware = (context, next) => {
-    context.request.headers = {
-        'User-Agent':
+const setUserAgent: KoAJAX.Middleware<Context> = ({ request }, next) => {
+    request.headers = {
+        'user-agent':
             process.env.HTTP_USER_AGENT || 'GitHub RESTful middleware',
-        ...context.request.headers
+        ...request.headers
     };
     return next();
 };

@@ -12,7 +12,7 @@ import { Request as KoAJAX_Request } from 'koajax';
  * @see {@link https://web-cell.dev/KoAJAX/interfaces/Request.html}
  */
 export type CommonRequest = Pick<KoAJAX_Request, 'method'> &
-    Pick<KoaRequest, 'hostname' | 'originalUrl'>;
+    Pick<KoaRequest, 'headers' | 'hostname' | 'originalUrl'>;
 
 /**
  * Sub set of Express & Koa `Response` object
