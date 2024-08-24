@@ -51,9 +51,15 @@ importers:
       '@tsconfig/node18':
         specifier: ^18.2.4
         version: 18.2.4
+      '@types/eventsource':
+        specifier: ^1.1.15
+        version: 1.1.15
       '@types/node':
         specifier: ^18.19.45
         version: 18.19.45
+      eventsource:
+        specifier: ^2.0.2
+        version: 2.0.2
       husky:
         specifier: ^9.1.5
         version: 9.1.5
@@ -384,6 +390,9 @@ packages:
 
   '@types/cookies@0.9.0':
     resolution: {integrity: sha512-40Zk8qR147RABiQ7NQnBzWzDcjKzNrntB5BAmeGCb2p/MIyOE+4BVvc17wumsUqUw00bJYqoXFHYygQnEFh4/Q==}
+
+  '@types/eventsource@1.1.15':
+    resolution: {integrity: sha512-XQmGcbnxUNa06HR3VBVkc9+A2Vpi9ZyLJcdS5dwaQQ/4ZMWFO+5c90FnMUpbtMZwB/FChoYHwuVg8TvkECacTA==}
 
   '@types/express-serve-static-core@4.19.5':
     resolution: {integrity: sha512-y6W03tvrACO72aijJ5uF02FRq5cgDR9lUxddQ8vyF+GvmjJQqbzDcJngEjURc+ZsG31VI3hODNZJ2URj86pzmg==}
@@ -721,6 +730,10 @@ packages:
 
   eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+
+  eventsource@2.0.2:
+    resolution: {integrity: sha512-IzUmBGPR3+oUG9dUeXynyNmf91/3zUSJg1lCktzKw47OXuhco54U3r9B7O4XX+Rb1Itm9OZ2b0RkTs10bICOxA==}
+    engines: {node: '>=12.0.0'}
 
   execa@8.0.1:
     resolution: {integrity: sha512-VyhnebXciFV2DESc+p6B+y0LjSm0krU4OgJN44qFAhBY0TJ+1V61tYD2+wHusZ6F9n5K+vl8k0sTy7PEfV4qpg==}
@@ -1756,6 +1769,8 @@ snapshots:
       '@types/keygrip': 1.0.6
       '@types/node': 18.19.45
 
+  '@types/eventsource@1.1.15': {}
+
   '@types/express-serve-static-core@4.19.5':
     dependencies:
       '@types/node': 18.19.45
@@ -2123,6 +2138,8 @@ snapshots:
     optional: true
 
   eventemitter3@5.0.1: {}
+
+  eventsource@2.0.2: {}
 
   execa@8.0.1:
     dependencies:

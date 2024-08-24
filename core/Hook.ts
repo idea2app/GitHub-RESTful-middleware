@@ -70,9 +70,11 @@ export class HookController {
         const { GITHUB_HOOK_SECRET = '' } = process.env,
             data = JSON.stringify(event),
             [algorithm, signValue] = signature?.split('=') || [];
-        const checkValue = createHmac(algorithm, GITHUB_HOOK_SECRET)
-            .update(data)
-            .digest('hex');
+        const checkValue =
+            algorithm &&
+            createHmac(algorithm, GITHUB_HOOK_SECRET)
+                .update(data)
+                .digest('hex');
 
         event = { ...event, id, signature };
 
