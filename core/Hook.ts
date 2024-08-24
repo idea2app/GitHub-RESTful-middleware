@@ -1,5 +1,5 @@
 import { components } from '@octokit/openapi-types';
-import { createChannel, createSession } from 'better-sse';
+import BetterSSE from 'better-sse';
 import { createHmac } from 'crypto';
 import { IncomingMessage, ServerResponse } from 'http';
 import { Context } from 'koa';
@@ -33,7 +33,7 @@ export type EventFilter = Partial<
 
 @Controller()
 export class HookController {
-    channel = createChannel<{}, EventFilter>();
+    channel = BetterSSE.createChannel<{}, EventFilter>();
 
     async bootSSE(
         request: IncomingMessage,
@@ -43,9 +43,11 @@ export class HookController {
         if (!request.headers.accept?.includes('text/event-stream'))
             throw new NotAcceptableError();
 
-        const session = await createSession<EventFilter>(request, response);
-        session.state = state;
-
+        const session = await BetterSSE.createSession<EventFilter>(
+            request,
+            response,
+            { state }
+        );
         this.channel.register(session);
     }
 
@@ -68,9 +70,11 @@ export class HookController {
         const { GITHUB_HOOK_SECRET = '' } = process.env,
             data = JSON.stringify(event),
             [algorithm, signValue] = signature?.split('=') || [];
-        const checkValue = createHmac(algorithm, GITHUB_HOOK_SECRET)
-            .update(data)
-            .digest('hex');
+        const checkValue =
+            algorithm &&
+            createHmac(algorithm, GITHUB_HOOK_SECRET)
+                .update(data)
+                .digest('hex');
 
         event = { ...event, id, signature };
 

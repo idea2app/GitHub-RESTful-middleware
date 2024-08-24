@@ -1,6 +1,9 @@
+import { isNotEmptyObject } from 'class-validator';
 import { html } from 'diff2html';
+import { LinkHeader } from 'koajax';
 import {
     All,
+    Body,
     Controller,
     Get,
     HeaderParam,
@@ -12,19 +15,14 @@ import {
 import { githubAPIClient, githubClient } from './OAuth.js';
 import { CommonRequest, CommonResponse } from './index.js';
 
-const CORS_Header: Record<string, boolean> = {
-    'access-control-allow-methods': true,
-    'access-control-allow-headers': true,
-    'access-control-expose-headers': true
-};
-
 @Controller()
 export class ProxyController {
     /**
-     * @param  owner     ID of a User or Organization
-     * @param  repo      Name of a Repository
-     * @param  id        ID of a Pull Request
-     * @param  accept    Accept header
+     * @param  owner          ID of a User or Organization
+     * @param  repo           Name of a Repository
+     * @param  id             ID of a Pull Request
+     * @param  Authorization  Authorization header
+     * @param  Accept         Accept header
      * @param  response
      *
      * @example
@@ -38,13 +36,15 @@ export class ProxyController {
         @Param('owner') owner: string,
         @Param('repo') repo: string,
         @Param('id') id: number,
-        @HeaderParam('Accept') accept = '',
+        @HeaderParam('Authorization') Authorization = '',
+        @HeaderParam('Accept') Accept = '',
         @Res() response: CommonResponse
     ) {
         const { body } = await githubClient.get<string>(
-            `/repos/${owner}/${repo}/pull/${id}.diff`
+            `${owner}/${repo}/pull/${id}.diff`,
+            { Authorization }
         );
-        const acceptHTML = accept.includes('html');
+        const acceptHTML = Accept.includes('html');
 
         response.set('Content-Type', acceptHTML ? 'text/html' : 'text/plain');
 
@@ -56,46 +56,47 @@ export class ProxyController {
     /**
      * Other API Proxy
      */
-    @All('*')
+    @All('/:path*')
     async proxyAll(
-        @HeaderParam('Accept') Accept = '',
-        @HeaderParam('Authorization') Authorization = '',
-        @HeaderParam('Cookie') Cookie = '',
+        @HeaderParam('Accept') accept = '',
+        @Param('path') path: string,
+        @Body() body: any,
         @Req() request: CommonRequest,
         @Res() response: CommonResponse
     ) {
-        const acceptJSON = Accept.includes('json'),
-            header = { Accept, Authorization, Cookie };
-        const {
-            status,
-            headers,
-            body: data
-        } = await githubAPIClient.request({
+        const acceptJSON = accept.includes('json'),
+            { host, connection, ...header } = request.headers;
+
+        const res = await githubAPIClient.request({
             method: request.method,
-            path: request.originalUrl,
-            headers: header,
+            path,
+            headers: { ...header, accept },
+            body: isNotEmptyObject(body) ? body : undefined,
             responseType: acceptJSON ? 'json' : 'arraybuffer'
         });
+        const { status, body: data } = res,
+            {
+                'Content-Encoding': _,
+                'Transfer-Encoding': __,
+                ...headers
+            } = res.headers;
 
-        const headerList = Object.entries(headers).map(([key, value]) => {
-            if (typeof value !== 'string') return [];
-
-            switch (key.split('-')[0]) {
-                case 'access':
-                    return CORS_Header[key.toLowerCase()]
-                        ? [key, [response.get(key) || '', value] + '']
-                        : [];
-                case 'x':
-                    return [];
-                default:
-                    return [key, value];
+        for (const key in headers)
+            if (key === 'Link') {
+                const value = Object.values(headers[key] as LinkHeader).map(
+                    ({ URI, ...meta }) => {
+                        const value = Object.entries(meta).map(
+                            ([key, value]) => `${key}=${JSON.stringify(value)}`
+                        );
+                        return `<${URI}>; ${value.join('; ')}`;
+                    }
+                );
+                headers[key] = value.join(', ');
             }
-        });
-
         if (typeof response.status === 'function') response.status(status);
         else response.status = status;
 
-        response.set(Object.fromEntries(headerList));
+        response.set(headers as Record<string, string>);
 
         return data;
     }
