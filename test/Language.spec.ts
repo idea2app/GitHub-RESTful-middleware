@@ -16,11 +16,11 @@ function assertLanguages(list?: Language[]) {
     );
 }
 
-describe('Language API', () => {
+describe('Language API', async () => {
     before(startServer);
     after(stopServer);
 
-    it('should get a language list of a user', async () => {
+    await it('should get a language list of a user', async () => {
         const { body } = await client.get<Language[]>(
             '/users/TechQuery/languages',
             header
@@ -28,7 +28,7 @@ describe('Language API', () => {
         assertLanguages(body);
     });
 
-    it('should get a language list of a signed-in user', async () => {
+    await it('should get a language list of a signed-in user', async () => {
         const { body } = await client.get<Language[]>(
             '/user/languages',
             header
@@ -36,7 +36,7 @@ describe('Language API', () => {
         assertLanguages(body);
     });
 
-    it('should get a language list of an organization', async () => {
+    await it('should get a language list of an organization', async () => {
         const { body } = await client.get<Language[]>(
             '/orgs/idea2app/languages',
             header

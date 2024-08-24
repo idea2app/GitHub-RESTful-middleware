@@ -4,11 +4,11 @@ import { after, before, describe, it } from 'node:test';
 import { client, header, startServer, stopServer } from './server_client.js';
 import { Repository } from '../core/Language.js';
 
-describe('Proxy API', () => {
+describe('Proxy API', async () => {
     before(startServer);
     after(stopServer);
 
-    it('should get a diff file of a pull request', async () => {
+    await it('should get a diff file of a pull request', async () => {
         const { body } = await client.get<string>(
             '/repos/idea2app/GitHub-RESTful-middleware/pull/1.diff',
             header
@@ -16,7 +16,7 @@ describe('Proxy API', () => {
         assert(body?.includes('diff --git'));
     });
 
-    it('should get a diff file of a pull request in HTML format', async () => {
+    await it('should get a diff file of a pull request in HTML format', async () => {
         const { body } = await client.get<string>(
             '/repos/idea2app/GitHub-RESTful-middleware/pull/1.diff',
             { ...header, Accept: 'text/html' }
@@ -24,7 +24,7 @@ describe('Proxy API', () => {
         assert(body?.includes('<div class="d2h-wrapper">'));
     });
 
-    it('should proxy any other GitHub REST API as fallback', async () => {
+    await it('should proxy any other GitHub REST API as fallback', async () => {
         const { body } = await client.get<Repository>(
             '/repos/idea2app/GitHub-RESTful-middleware',
             header
