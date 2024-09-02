@@ -42,7 +42,8 @@ export class ProxyController {
     ) {
         const { body } = await githubClient.get<string>(
             `${owner}/${repo}/pull/${id}.diff`,
-            { Authorization }
+            { Authorization },
+            { responseType: 'text' }
         );
         const acceptHTML = Accept.includes('html');
 
@@ -70,6 +71,7 @@ export class ProxyController {
         const res = await githubAPIClient.request({
             method: request.method,
             path,
+            // @ts-ignore
             headers: { ...header, accept },
             body: isNotEmptyObject(body) ? body : undefined,
             responseType: acceptJSON ? 'json' : 'arraybuffer'

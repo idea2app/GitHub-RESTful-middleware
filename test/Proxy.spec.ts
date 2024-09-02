@@ -11,7 +11,8 @@ describe('Proxy API', async () => {
     await it('should get a diff file of a pull request', async () => {
         const { body } = await client.get<string>(
             '/repos/idea2app/GitHub-RESTful-middleware/pull/1.diff',
-            header
+            header,
+            { responseType: 'text' }
         );
         assert(body?.includes('diff --git'));
     });
@@ -19,7 +20,8 @@ describe('Proxy API', async () => {
     await it('should get a diff file of a pull request in HTML format', async () => {
         const { body } = await client.get<string>(
             '/repos/idea2app/GitHub-RESTful-middleware/pull/1.diff',
-            { ...header, Accept: 'text/html' }
+            { ...header, Accept: 'text/html' },
+            { responseType: 'text' }
         );
         assert(body?.includes('<div class="d2h-wrapper">'));
     });
